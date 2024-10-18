@@ -17,7 +17,8 @@ import axios from "axios"
 import Login from "./src/pages/Login"
 import Home from "./src/pages/Home"
 import ProductList from "./src/pages/ProductList"
-import ManageUsers from "./src/pages/ManageUsers"
+import UsersList from "./src/pages/UsersList"
+import RegisterUser from "./src/pages/RegisterUser"
 
 
 export default function App() {
@@ -37,8 +38,9 @@ export default function App() {
 
           <Stack.Screen name="Login" component={ Login } options={{header: () => <></>}}></Stack.Screen>
           <Stack.Screen name="Home"  component={ Home } ></Stack.Screen>
-          <Stack.Screen name="ProductList"  component={ ProductList } ></Stack.Screen>
-          <Stack.Screen name="ManageUsers"  component={ ManageUsers } ></Stack.Screen>
+          <Stack.Screen name="Products List"  component={ ProductList } ></Stack.Screen>
+          <Stack.Screen name="Users"  component={ UsersList } ></Stack.Screen>
+          <Stack.Screen name="Register User"  component={ RegisterUser } ></Stack.Screen>
 
         </Stack.Navigator>
       </NavigationContainer>

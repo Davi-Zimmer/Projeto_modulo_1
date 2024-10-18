@@ -50,11 +50,11 @@ export default function Home({navigation}: any){
 
         <View style={styles.cardContainer}>
 
-            <TouchableOpacity style={styles.card} onPress={() => navigateTo("ProductList")}>
+            <TouchableOpacity style={styles.card} onPress={() => navigateTo("Products List")}>
                 <Text>Estoque</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.card} onPress={() => navigateTo("ManageUsers")}>
+            <TouchableOpacity style={styles.card} onPress={() => navigateTo("Users")}>
                 <Text>Usuários</Text>
             </TouchableOpacity>
 
