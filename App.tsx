@@ -15,6 +15,7 @@ import axios from "axios"
 
 // Custom Screens \\
 import Login from "./src/pages/Login"
+import Home from "./src/pages/Home"
 
 
 export default function App() {
@@ -32,7 +33,8 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator initialRouteName='Login'>
 
-          <Stack.Screen name="Login" component={Login} options={{header: () => <></>}}></Stack.Screen>
+          <Stack.Screen name="Login" component={ Login } options={{header: () => <></>}}></Stack.Screen>
+          <Stack.Screen name="Home"  component={ Home } ></Stack.Screen>
 
         </Stack.Navigator>
       </NavigationContainer>
