@@ -16,6 +16,8 @@ import axios from "axios"
 // Custom Screens \\
 import Login from "./src/pages/Login"
 import Home from "./src/pages/Home"
+import ProductList from "./src/pages/ProductList"
+import ManageUsers from "./src/pages/ManageUsers"
 
 
 export default function App() {
@@ -35,6 +37,8 @@ export default function App() {
 
           <Stack.Screen name="Login" component={ Login } options={{header: () => <></>}}></Stack.Screen>
           <Stack.Screen name="Home"  component={ Home } ></Stack.Screen>
+          <Stack.Screen name="ProductList"  component={ ProductList } ></Stack.Screen>
+          <Stack.Screen name="ManageUsers"  component={ ManageUsers } ></Stack.Screen>
 
         </Stack.Navigator>
       </NavigationContainer>
@@ -42,20 +46,3 @@ export default function App() {
     </SafeAreaView>
   )
 }
-
-/*
-pontos extras
-
-
-senha do celular
-
-
-integrar login do celular com o app
-(autenticação pelo celular/ login automatico)
-
-
-
-na tela de fazer as movimentações
-  em vez de um scrool, criar um swipe list.
-
-*/
