@@ -13,5 +13,12 @@ export const globalStyle = StyleSheet.create({
 
     buttonText: {
         color: 'white', 
+    },
+
+
+    textInput: {
+        padding: 10,
+        borderWidth: 1,
+        borderColor: 'red'
     }
 })
