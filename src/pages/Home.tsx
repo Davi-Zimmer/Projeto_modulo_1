@@ -9,8 +9,7 @@ import { storage } from "../scripts/localStorage";
 // Custom Components \\
 import Header from "../components/Header";
 import User from "../components/User";
-
-
+import { useEffect, useState } from "react";
 
 
 export default function Home({navigation}: any){
@@ -22,11 +21,19 @@ export default function Home({navigation}: any){
         navigateTo('Login')
     }
 
+    const [userName, setUserName] = useState('')
+    
+    useEffect(() => {
+        storage.get('user').then( user => {
+            setUserName( user.name )
+        }).catch( console.warn )
+    }, [])
+
 
     return (
     <View>
         <Header>
-            <User name='Wall Termite' image="https://placehold.co/200.png" />
+            <User name={"Olá, " + userName} image="https://placehold.co/200.png" />
         </Header>
 
         <Button title='Logout' onPress={backToLogin}></Button>

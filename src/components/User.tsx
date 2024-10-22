@@ -21,6 +21,7 @@ export default function User({ name, image } : UserProps){
 }
 
 
+
 const styles = StyleSheet.create({
     userContainer: {
         flexDirection: 'row',

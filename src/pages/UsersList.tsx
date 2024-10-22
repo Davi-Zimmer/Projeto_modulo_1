@@ -61,8 +61,6 @@ export default function UsersList({navigation} : any) {
 
     const [users, setUsers] = useState<Array<UserDataProps>>([])
 
-    console.log(users.length)
-
     // pega todos os usuários da database
     function getUsers() {
         axios.get(process.env.EXPO_PUBLIC_API_URL + '/users').then( res => {
@@ -85,7 +83,6 @@ export default function UsersList({navigation} : any) {
             Alert.alert('Não foi possível atualizar o status do usuário.')
         })
     
-        
     }
 
     return (
