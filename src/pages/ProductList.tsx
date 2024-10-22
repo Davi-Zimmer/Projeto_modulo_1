@@ -23,8 +23,6 @@ type ProductProps = {
     location: string
     latitude: string
     longitude: string
-
-
 }
 
 type ProductArray = Array<ProductProps>
@@ -80,13 +78,11 @@ export default function ProductList() {
             <TextInput value={filter} onChangeText={setFilter} style={styles.filterInput} placeholder="digete o nome do produto ou loja"/>
             <Text>Nós encrontramos {filteredItems.length} produtos.</Text>
 
-
             <FlatList data={filteredItems}
                 renderItem={({item}) => P(item)}
                 contentContainerStyle={{ width: "100%" }}
                 style={styles.flatList}
-                
-            >   
+            >
 
             </FlatList>
         </View>

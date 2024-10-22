@@ -5,29 +5,12 @@ import { View, Text, Button, StyleSheet, Image, TouchableOpacity } from "react-n
 import { storage } from "../scripts/localStorage";
 
 
-type UserProps = {
-    name: string
-    image: string
-}
-
-function User({ name, image } : UserProps){
-
-    return (
-        <View style={styles.userContainer}>
-            <Image source={{uri: image}} style={{
-                width: 60,
-                height: 60,
-                borderRadius: 50
-            }}/>
-
-            <Text style={{fontSize: 15}}>{name}</Text>
-        </View>
-    )
-}
-
 
 // Custom Components \\
 import Header from "../components/Header";
+import User from "../components/User";
+
+
 
 
 export default function Home({navigation}: any){
@@ -87,3 +70,5 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     }
 })
+
+// https://coolors.co/image-picker

@@ -1,4 +1,3 @@
-
 // React \\
 import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image} from "react-native"
 import { useEffect, useState } from "react"
@@ -20,7 +19,8 @@ import { globalStyle } from "../styleSheets/globalStyleSheet"
 // Functions \\
 function getRouteByProfile( userProfile:string ){
 
-    let route = 'Home' // movimentação motoristas
+    // default drivers route
+    let route = 'Products List' // movimentação motoristas
 
     if( userProfile === 'admin'){
         route = 'Home'
@@ -28,16 +28,18 @@ function getRouteByProfile( userProfile:string ){
     
     else if(userProfile === 'filial'){
         // movimentação
-        route = 'Home'
+        route = 'Movements List'
     }
+
+    console.warn( route )
 
     return route
 }
 
 export default function Login({navigation} : any) {
 
-    const [ email, setEmail ] = useState('admin@gmail.com')
-    const [ password, setPassword ] = useState('123456')
+    const [ email, setEmail ]       = useState('A@gmail.com') // admin@gmail.com
+    const [ password, setPassword ] = useState('12')          // 123456
 
     //storage.set('user', null)
 
@@ -52,7 +54,7 @@ export default function Login({navigation} : any) {
 
                 navigation.dispatch( CommonActions.reset({
                     index: 0,
-                    routes: [{name: 'Home'}]
+                    routes: [{name: 'Movements List'}]
                 }))
 
             }

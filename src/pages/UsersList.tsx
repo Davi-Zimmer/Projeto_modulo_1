@@ -61,13 +61,14 @@ export default function UsersList({navigation} : any) {
 
     const [users, setUsers] = useState<Array<UserDataProps>>([])
 
+    console.log(users.length)
 
     // pega todos os usuários da database
     function getUsers() {
         axios.get(process.env.EXPO_PUBLIC_API_URL + '/users').then( res => {
           
-            const item = clone( res.data[0] )
-            setUsers([item[0]])
+            // const item = clone( res.data[0] )
+            setUsers( res.data )
 
         })
     }
