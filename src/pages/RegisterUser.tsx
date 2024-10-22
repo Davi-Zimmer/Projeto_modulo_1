@@ -53,7 +53,6 @@ type DoubleSelectionProps = {
     onChange: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-
 function DoubleSelection({children, firstSelected, onChange}: DoubleSelectionProps){
     
     if( children.length != 2 ) throw new Error('Only 2 child nodes are allowed.')
