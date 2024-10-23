@@ -14,16 +14,7 @@ import { useFocusEffect } from "@react-navigation/native"
 import { FilterList } from "../scripts/FilterItems"
 import { storage } from "../scripts/localStorage"
 
-type ProductProps = {
-    product_name: string
-    quantity: number
-    image_url: string
-    description: string
-    branch_name: string
-    location: string
-    latitude: string
-    longitude: string
-}
+import { ProductProps } from "../Props/ProductProps"
 
 type ProductArray = Array<ProductProps>
 
