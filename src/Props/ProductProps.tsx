@@ -9,5 +9,11 @@ export type ProductProps = {
     longitude: string
 }
 
+export type LocalizationProps = {
+    nome: string
+    latitude: number
+    longitude: number
+}
+
 // type Props = { ProductProps:ProductProps }
 
