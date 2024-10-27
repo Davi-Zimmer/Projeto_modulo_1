@@ -1,6 +1,6 @@
 // React \\
 import { View, Text, Button, StyleSheet, Image, TouchableOpacity } from "react-native";
-
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 
 import { storage } from "../scripts/localStorage";
 
@@ -9,7 +9,7 @@ import { storage } from "../scripts/localStorage";
 import Header from "../components/Header";
 import User from "../components/User";
 import { useEffect, useState } from "react";
-
+import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet";
 
 export default function Home({navigation}: any){
     
@@ -26,49 +26,43 @@ export default function Home({navigation}: any){
         storage.get('user').then( user => {
             setUserName( user.name )
         }).catch( console.warn )
+
     }, [])
 
 
     return (
-    <View>
-        <Header>
-            <User name={"Olá, " + userName} image="https://placehold.co/200.png" />
-        </Header>
+        <View style={[globalStyle.container]}>
+            <Header style={globalStyle.header}>
+                <User name={"Olá, " + userName} image="https://placehold.co/200.png" />
 
-        <Button title='Logout' onPress={backToLogin}></Button>
+                <TouchableOpacity onPress={backToLogin}>
+                    {
+                        // <Text style={{color: '#86A5FC'}}>Logout</Text>
+                        <MaterialCommunityIcons name="logout" color={globalColors.mainColor} size={25}/>
+                    }
+                </TouchableOpacity>
+            </Header>
 
-        <View style={styles.cardContainer}>
+            <View style={globalStyle.optionsContainer}>
 
-            <TouchableOpacity style={styles.button} onPress={() => navigateTo("Products List")}>
-                <Text>Estoque</Text>
-            </TouchableOpacity>
+                <TouchableOpacity style={globalStyle.optionButton} onPress={() => navigateTo("Products List")}>
+                    <Text style={[globalStyle.optionText, globalStyle.font]}>Estoque</Text>
+                    <MaterialCommunityIcons name="store-check-outline" color={globalColors.mainColor} size={40}/>
+                </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button} onPress={() => navigateTo("Users")}>
-                <Text>Usuários</Text>
-            </TouchableOpacity>
+                <TouchableOpacity style={globalStyle.optionButton} onPress={() => navigateTo("Users")}>
+                    <Text style={[globalStyle.optionText, globalStyle.font]}>Usuários</Text>
+                    <MaterialCommunityIcons name="account-group-outline" color={globalColors.mainColor} size={40}/>
+                </TouchableOpacity>
 
+            </View>
+
+            
         </View>
-
-        
-    </View>
     )
 }
 
-
 const styles = StyleSheet.create({
-    button: {
-        padding: 10,
-        borderWidth: 1,
-        borderColor: 'red',
-        width: "80%",
-        margin: 10
-    },
-
-    cardContainer: {
-        padding: 10,
-        alignItems: 'center',
-        marginTop: 20
-    },
 
     userContainer: {
         flexDirection: 'row',
@@ -76,5 +70,3 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     }
 })
-
-// https://coolors.co/image-picker

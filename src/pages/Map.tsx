@@ -4,6 +4,7 @@ import {useState, useEffect} from "react"
 import MapView, { Marker } from "react-native-maps"
 import { useRoute } from "@react-navigation/native"
 import { LocalizationProps } from "../Props/ProductProps"
+import { globalColors } from "../styleSheets/globalStyleSheet"
 
 type CoordinatesProps = {
     userLocation: LocalizationProps
@@ -17,7 +18,6 @@ export default function Map() {
     const {userLocation, destinationLocation} : CoordinatesProps = route.params as CoordinatesProps
 
     const [focusInUser, setFocusInUser] = useState( true )
-
 
     const [region, setRegion] = useState({
         latitude: 0,
@@ -36,18 +36,12 @@ export default function Map() {
 
     useEffect( () => {
 
-
-
         if( focusInUser ){
             updateRegion( destinationLocation.latitude, destinationLocation.longitude)
-   
-
         } else {
-
             updateRegion( userLocation.latitude, userLocation.longitude)
-
-
         }
+
     }, [focusInUser])
 
 
@@ -60,9 +54,12 @@ export default function Map() {
         
         <View style={styles.container}>
 
+            <TouchableOpacity onPress={goToDesteny}>
+                <Text style={styles.text}>{focusInUser ? 'Ir para destino' : 'Ir para origem'}</Text>
+            </TouchableOpacity>
 
-            <Button title={focusInUser ? 'Ir para destino' : 'Ir para origem'} onPress={goToDesteny}/>
-            <Text>{'Distância: '}</Text>
+            {/* <Text>{'Distância: '}</Text> */}
+
             <MapView style={styles.map}
                 provider='google'
                 
@@ -95,11 +92,15 @@ export default function Map() {
 
 const styles = StyleSheet.create({
     container: {
-
+        backgroundColor: globalColors.anyContainerBackground
     },
 
     map: {
         width: '100%',
-        height: '100%'
+        height: '100%',
+    },
+
+    text: {
+        color: globalColors.mainColor
     }
 })

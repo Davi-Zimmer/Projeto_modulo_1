@@ -1,6 +1,7 @@
 // React \\
 import {View, Text, SafeAreaView, Alert, TouchableOpacity, StyleSheet, StatusBar} from "react-native"
 import {useState, useEffect} from "react"
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 
 
 // React Navigation \\
@@ -23,16 +24,33 @@ import MovementsList from "./src/pages/MovementsList"
 import RegisterMovement from "./src/pages/RegisterMovement"
 import ViewMovements from "./src/pages/ViewMovements"
 import Map from "./src/pages/Map"
+import { globalColors } from "./src/styleSheets/globalStyleSheet"
+
+function AppHeader(){
+    return {
+
+      header: ( { navigation }:any ) => {
+
+        return (
+        
+          <View style={styles.appHeader}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <MaterialCommunityIcons name="chevron-left" size={50} color={globalColors.mainColor}/>
+            </TouchableOpacity>
+          </View>
+        )
+
+      }
+
+    }
+}
+
+function emptyHeader(){
+  return {header: () => <></>}
+}
 
 
 export default function App() {
-  /*
-    axios.get( process.env.EXPO_PUBLIC_API_URL + '/products').then( res => {
-      console.log( res )
-    }).catch( err => {
-      console.error( err )
-    })
-  */
 
   return (
     <SafeAreaView style={{flex:1}}>
@@ -40,21 +58,27 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator initialRouteName='Login'>
 
-          <Stack.Screen name="Login" component={ Login } options={{header: () => <></>}}></Stack.Screen>
-          <Stack.Screen name="Home"  component={ Home } ></Stack.Screen>
-          <Stack.Screen name="Products List"  component={ ProductList } ></Stack.Screen>
-          <Stack.Screen name="Users"  component={ UsersList } ></Stack.Screen>
-          <Stack.Screen name="Register User"  component={ RegisterUser } ></Stack.Screen>
-          <Stack.Screen name="Movements List"  component={ MovementsList } ></Stack.Screen>
-          <Stack.Screen name="Register Movement"  component={ RegisterMovement } ></Stack.Screen>
-          <Stack.Screen name="View Movements"  component={ ViewMovements } ></Stack.Screen>
-          <Stack.Screen name="Map"  component={ Map } initialParams={{ userLocation:null, destinationLocation:null }}></Stack.Screen>
-          {/*
-          */}
+          <Stack.Screen name="Login" component={ Login } options={emptyHeader()} />
+          <Stack.Screen name="Home"  component={ Home } options={ emptyHeader() } />
+          <Stack.Screen name="Products List" component={ ProductList } options={ emptyHeader() } />
+          <Stack.Screen name="Users" component={ UsersList } options={ emptyHeader() }/>
+          <Stack.Screen name="Register User" component={ RegisterUser } options={ emptyHeader() } />
+          <Stack.Screen name="Movements List" component={ MovementsList } options={ emptyHeader() }/>
+          <Stack.Screen name="Register Movement" component={ RegisterMovement } options={ emptyHeader() }/>
+          <Stack.Screen name="View Movements" component={ ViewMovements } options={ emptyHeader() } />
+          <Stack.Screen name="Map" component={ Map } initialParams={{ userLocation:null, destinationLocation:null }}></Stack.Screen>
+         
 
         </Stack.Navigator>
       </NavigationContainer>
 
     </SafeAreaView>
   )
+}
+
+
+const styles = {
+  appHeader: {
+    backgroundColor: globalColors.casing
+  }
 }

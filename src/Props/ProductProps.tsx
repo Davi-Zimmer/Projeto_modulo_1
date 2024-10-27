@@ -15,5 +15,27 @@ export type LocalizationProps = {
     longitude: number
 }
 
-// type Props = { ProductProps:ProductProps }
+type ProductSimpleProps = {
+    nome: string
+    imagem:string 
+}
 
+type HistoricItemProps = {
+    id: number
+    descricao: string
+    data: string
+    file: string
+}
+
+export type MovementProps = {
+    id: number
+    produto: ProductSimpleProps
+    quantidade: number
+    status: string
+    origem: LocalizationProps
+    destino: LocalizationProps
+    dataCriacao: string
+    historico: Array<HistoricItemProps>
+}
+
+// type Props = { ProductProps:ProductProps }

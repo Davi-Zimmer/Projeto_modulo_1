@@ -1,12 +1,13 @@
 // React \\
-import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity, Touchable, Alert, Button } from "react-native";
+import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity, Touchable, Alert, Button, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 
 
-
-import { globalStyle } from "../styleSheets/globalStyleSheet";
+import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet";
 import axios from "axios";
 
+import AppBar from "../components/AppBar";
 
 type InfoInputProps = {
     content: string
@@ -22,27 +23,29 @@ function InfoInput({content, value, onChange} : InfoInputProps) {
     
     return (
         <View style={styles.inputContainer}>
-            <Text>{content}</Text>
-            <TextInput value={value} onChangeText={handleChanges} style={globalStyle.textInput}/>
+            <Text style={[globalStyle.font, styles.textInput]}>{content}</Text>
+            <TextInput value={value} onChangeText={handleChanges} style={[globalStyle.textInput, styles.input]}/>
         </View>
     )
 }
 
 type ButtonSelectionProps = {
-    label: string
-    onPress?: () => void
-
+    icon: string
+    onPress?: () => void,
+    selected?: boolean
 }
 
-function ButtonSelection({label, onPress}:ButtonSelectionProps) {
+function ButtonSelection({ icon, onPress, selected }:ButtonSelectionProps) {
     
     function handlePress(){
         onPress?.()
     }
 
+    const color = selected ? globalColors.positiveColor : globalColors.mainColor 
+
     return (
-        <TouchableOpacity onPress={ handlePress } style={styles.ButtonSelection}>
-            <Text>{label}</Text>
+        <TouchableOpacity onPress={ handlePress } style={[styles.ButtonSelection, {borderColor: color}]}>
+            <MaterialCommunityIcons name={icon as any} size={40} color={ color }/>
         </TouchableOpacity>
     )
 }
@@ -61,11 +64,15 @@ function DoubleSelection({children, firstSelected, onChange}: DoubleSelectionPro
         onChange( index === 0 )
     }
 
+
     return (
         <View style={styles.DoubleSelectionStyle}>
             {React.Children.map(children, (child, index) => {
+            console.log( firstSelected)
+
                 return (React.cloneElement( child, { 
-                    onPress: () => toggleSelection(index)
+                    onPress: () => toggleSelection(index),
+                    selected: (firstSelected ? 0 : 1) == index
                 }))
             })}
         </View>
@@ -73,8 +80,7 @@ function DoubleSelection({children, firstSelected, onChange}: DoubleSelectionPro
 }
 
 
-
-export default function RegisterUser(){
+export default function RegisterUser({navigation}: any){
     
     const [ isDriver, setIsDriver ] = useState(true)
     const [ name, setName ] = useState('')
@@ -129,47 +135,73 @@ export default function RegisterUser(){
     }
 
     return (
-        <View>
+
+        <>
+            <AppBar pageName="Register Movement" goBack={navigation.goBack }/>
+            <View style={[globalStyle.container, styles.container]}>
             
-            <DoubleSelection firstSelected={isDriver} onChange={setIsDriver}>
-                <ButtonSelection label="Motorista" />
-                <ButtonSelection label="Filial" />
-            </DoubleSelection>
+                <ScrollView style={styles.inputsContainer}>
+                    <DoubleSelection firstSelected={isDriver} onChange={setIsDriver}>
+                        <ButtonSelection icon="car-hatchback" />
+                        <ButtonSelection icon="office-building-marker-outline" />
+                    </DoubleSelection>
 
-            <InfoInput content="Nome completo" value={name} onChange={setName}/>
-            <InfoInput content={isDriver == true ? 'CPF' : 'CNPJ'} value={document}  onChange={setDocument}/>
+                    <InfoInput content="Nome completo" value={name} onChange={setName}/>
+                    <InfoInput content={isDriver == true ? 'CPF' : 'CNPJ'} value={document}  onChange={setDocument}/>
 
-            <InfoInput content="Endereço" value={address} onChange={setAddress}/>
-            <InfoInput content="Email" value={email} onChange={setEmail}/>
-            <InfoInput content="Senha" value={password} onChange={setPassword}/>
-            <InfoInput content="Confirme a senha" value={confirmPassword} onChange={setConfirmPassword}/>
-            
-            <TouchableOpacity style={globalStyle.button} onPress={handleRegister}>
-                <Text style={globalStyle.buttonText}>Cadastrar</Text>
-            </TouchableOpacity>
+                    <InfoInput content="Endereço" value={address} onChange={setAddress}/>
+                    <InfoInput content="Email" value={email} onChange={setEmail}/>
+                    <InfoInput content="Senha" value={password} onChange={setPassword}/>
+                    <InfoInput content="Confirme a senha" value={confirmPassword} onChange={setConfirmPassword}/>
+                    
+                    <TouchableOpacity style={globalStyle.button} onPress={handleRegister}>
+                        <Text style={globalStyle.buttonText}>Cadastrar</Text>
+                    </TouchableOpacity>
 
-        </View>
+                </ScrollView>
+
+            </View>
+        </>
     )
 }
 
 
 const styles = StyleSheet.create({
+
+    inputsContainer: {
+        padding: 10,
+        gap: 10,
+        backgroundColor: globalColors.casing,
+
+    },
+
+    input: {
+        padding: 10
+    },
+
+    textInput: {
+        color: globalColors.mainColor,
+        fontSize: 15
+    },
+
+
     ButtonSelection: {
         borderWidth: 1,
-        borderColor: 'blue',
-        padding: 20
+        padding: 20,
+        borderColor: globalColors.mainColor
     },
 
     inputContainer: {
-        margin: 10
+        margin: 10,
     },
      
     DoubleSelectionStyle: {
         flexDirection: 'row',
         justifyContent: 'space-around'
+    },
+
+    container: {
+        padding: 10,
     }
 
 })
-
-
-// useFocusEffect

@@ -1,13 +1,14 @@
 // React \\
-import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity, Touchable, Alert, Button } from "react-native";
+import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity, Touchable, Alert, Button, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react"
 
 
-import { globalStyle } from "../styleSheets/globalStyleSheet"
+import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet"
 import axios from "axios"
 import { Picker } from "@react-native-picker/picker";
 
 import { ProductProps } from "../Props/ProductProps";
+import AppBar from "../components/AppBar";
 
 
 type BranchProps = {
@@ -25,8 +26,7 @@ type ProductsOptionsProps = {
     branch_id: number
 }
 
-
-export default function RegisterMovement() {
+export default function RegisterMovement({navigation} : any) {
 
     const [originBranchId, setOriginBranchId]           = useState('1')
     const [destinationBranchId, setDestinationBranchId] = useState('1')
@@ -120,78 +120,125 @@ export default function RegisterMovement() {
         getBranchProducts( )
     }, [originBranchId, branches, allProducts])
 
-
     return(
-        <View style={styles.container}>
-            <View>
-                <Text>Filial de Origem</Text>
-                <View style={styles.picker}>
-                    <Picker selectedValue={ originBranchId } onValueChange={ setOriginBranchId } >
-                        {
-                            branches.map( (elm, i) => <Picker.Item label={elm.name} value={elm.id} key={i} />)
-                        }
-                    </Picker>
+        <>
+            <AppBar pageName="Register Movement" goBack={navigation.goBack }/>
+            <ScrollView style={[globalStyle.container, styles.container]}>
+
+                <View style={styles.posContainer}>
+
+                    <View style={styles.inputsContainers}>
+                        <Text style={[styles.buttonText, globalStyle.font]}>Filial de Origem</Text>
+                        <View style={styles.picker}>
+                            <Picker selectedValue={ originBranchId } onValueChange={ setOriginBranchId }  style={styles.picker}>
+                                {
+                                    branches.map(
+                                            (elm, i) => <Picker.Item style={styles.pickerItem}
+                                            label={elm.name}
+                                            value={elm.id}
+                                            key={i}
+                                        />
+                                    )
+                                }
+                            </Picker>
+                        </View>
+                    </View>
+
+                    <View style={styles.inputsContainers}>
+                        <Text style={[styles.buttonText, globalStyle.font]}>Filial de Destino</Text>
+                        <View style={styles.picker}>
+                            <Picker selectedValue={ destinationBranchId } onValueChange={ setDestinationBranchId } style={styles.picker}>
+                                {
+                                    branches.map( 
+                                        (elm, i)=> <Picker.Item style={ styles.pickerItem }
+                                            label={elm.name}
+                                            value={elm.id}
+                                            key={i} 
+                                        />
+                                    )
+                                }
+                            </Picker>
+                        </View>
+                    </View>
+
+                    <View style={styles.inputsContainers}>
+                        <Text style={[styles.buttonText, globalStyle.font]}>Produto Desejado</Text>
+                        <View style={styles.picker}>
+                            <Picker selectedValue={ desiredProductId } onValueChange={ setDesiredProductId } style={styles.picker}>
+                                {
+                                    products.map( 
+                                        (elm, i) => <Picker.Item style={ styles.pickerItem }
+                                            label={elm.product_name + `: ${elm.quantity} Un.`}
+                                            value={i}
+                                            key={i} 
+                                            
+                                        />
+                                    )
+                                }
+                            </Picker>
+                        </View>
+                    </View>
+
+                    <View style={styles.inputsContainers}>
+                        <Text style={[styles.buttonText, globalStyle.font]}>Quantia Desejada</Text>
+                        <TextInput style={globalStyle.textInput} value={productQuantity} keyboardType="numeric" onChangeText={setProductQuantity}></TextInput>
+                    </View>
+
+                    <View style={styles.inputsContainers}>
+                        <Text style={[styles.buttonText, globalStyle.font]}>Observações</Text>
+                        <TextInput style={[globalStyle.textInput, styles.description]} multiline value={description} onChangeText={setDescription}></TextInput>
+                    </View>
+
+                    <TouchableOpacity style={globalStyle.button} onPress={ValidateData}>
+                        <Text style={globalStyle.buttonText}>Cadastrar</Text>
+                    </TouchableOpacity>
                 </View>
-            </View>
 
-            <View>
-                <Text>Filial de Destino</Text>
-                <View style={styles.picker}>
-                    <Picker selectedValue={ destinationBranchId } onValueChange={ setDestinationBranchId } style={styles.picker}>
-                        {
-                            branches.map( (elm, i)=> <Picker.Item label={elm.name} value={elm.id} key={i} />)
-                        }
-                    </Picker>
-                </View>
-            </View>
-
-            <View>
-                <Text>Produto Desejado</Text>
-                <View style={styles.picker}>
-                    <Picker selectedValue={ desiredProductId } onValueChange={ setDesiredProductId } style={styles.picker}>
-                        {
-                            products.map( (elm, i) => <Picker.Item label={elm.product_name + `: ${elm.quantity} Un.`} value={i} key={i} />)
-                        }
-                    </Picker>
-                </View>
-            </View>
-
-            <View>
-                <Text>Quantia Desejada</Text>
-                <TextInput style={globalStyle.textInput} value={productQuantity} keyboardType="numeric" onChangeText={setProductQuantity}></TextInput>
-            </View>
-
-            <View>
-                <Text>Observações</Text>
-                <TextInput style={globalStyle.textInput} value={description} onChangeText={setDescription}></TextInput>
-            </View>
-
-            <TouchableOpacity style={styles.button} onPress={ValidateData}>
-                <Text style={styles.buttonText}>Cadastrar</Text>
-            </TouchableOpacity>
-
-        </View>
+                </ScrollView>
+        </>
     )
 }
 
 const styles = StyleSheet.create({
+    description: {
+        padding: 20
+    },
+
+    textInput: {
+        padding: 20
+    },
 
     container: {
-        gap: 20,
-    },
-
-    picker: {
-        borderWidth: 1,
-        borderColor: 'red'
-    },
-
-    button: {
-        backgroundColor: 'red',
         padding: 10,
-        alignItems: 'center'
+        gap: 20
+    },
+
+    pickerItem: {
+        backgroundColor: globalColors.casing,
+        color: globalColors.mainColor,
+        padding: 5,
+
     },
 
     buttonText: {
-        color: 'white'
+        color: globalColors.mainColor,
+        fontSize: 15
     },
+
+    posContainer: {
+        backgroundColor: globalColors.casing,
+        padding: 20,
+    },
+
+    inputsContainers: {
+        backgroundColor: 'rgba(0, 0, 0, .1)',
+        marginVertical: 10
+    },
+
+    picker: {
+        borderBottomWidth: 1,
+        borderBottomColor: globalColors.mainColor,
+        padding: 7
+    },
+
 })
