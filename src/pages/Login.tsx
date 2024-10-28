@@ -36,8 +36,8 @@ function getRouteByProfile( userProfile:string ){
 
 export default function Login({navigation}:any) {
 
-    const [ email, setEmail ]       = useState('admin@gmail.com') // ('A@gmail.com') // admin@gmail.com
-    const [ password, setPassword ] = useState('123456')          // ('12')          // 123456
+    const [ email, setEmail ]       = useState('w@gmail.com') // ('A@gmail.com') // admin@gmail.com
+    const [ password, setPassword ] = useState('1')          // ('12')          // 123456
 
     // storage.set('user', null)
 

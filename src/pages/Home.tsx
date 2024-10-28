@@ -5,7 +5,6 @@ import { View, Text, Button, StyleSheet, Image, TouchableOpacity } from "react-n
 import { storage } from "../scripts/localStorage";
 
 
-
 // Custom Components \\
 import Header from "../components/Header";
 import User from "../components/User";

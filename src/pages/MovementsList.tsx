@@ -41,12 +41,16 @@ export default function MovementsList({navigation}:any){
         }).catch( console.error )
 
         storage.get('user').then( user => setUserName(user.name)).catch( console.error )
-
-    }, [])
+    }) , []
 
 
     function addMoviment() {
         navigation.navigate('Register Movement')
+    }
+
+    function viewMovements() {
+        navigation.navigate('View Movements')
+
     }
     
     function backToLogin(){
@@ -68,6 +72,10 @@ export default function MovementsList({navigation}:any){
 
             <TouchableOpacity onPress={addMoviment} style={globalStyle.button}>
                 <Text style={globalStyle.buttonText}>Adicionar Movimentação</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={viewMovements} style={globalStyle.button}>
+                <Text style={globalStyle.buttonText}>Visualizar movimentos</Text>
             </TouchableOpacity>
 
             <Button title='Logout' onPress={backToLogin}></Button>
