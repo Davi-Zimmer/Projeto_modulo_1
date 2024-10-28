@@ -46,7 +46,7 @@ export default function MovementsList({navigation}:any){
 
 
     function addMoviment() {
-        // navigation.navigate('')
+        navigation.navigate('Register Movement')
     }
     
     function backToLogin(){
