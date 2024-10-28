@@ -1,6 +1,6 @@
 
 // React \\
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image, FlatList} from "react-native"
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image, FlatList, Button} from "react-native"
 import { useEffect, useState } from "react"
 
 
@@ -12,7 +12,7 @@ import axios from "axios"
 import { globalStyle } from "../styleSheets/globalStyleSheet"
 import { useFocusEffect } from "@react-navigation/native"
 import { FilterList } from "../scripts/FilterItems"
-
+import { storage } from "../scripts/localStorage"
 
 type ProductProps = {
     product_name: string
@@ -23,14 +23,12 @@ type ProductProps = {
     location: string
     latitude: string
     longitude: string
-
-
 }
 
 type ProductArray = Array<ProductProps>
 
 
-export default function ProductList() {
+export default function ProductList({navigation}: any) {
 
     const [products, setProducts] = useState<ProductArray>([])
 
@@ -54,7 +52,7 @@ export default function ProductList() {
     }, [products])
 
 
-    function P({product_name, branch_name, image_url, quantity, description}: ProductProps){
+    function Product({product_name, branch_name, image_url, quantity, description}: ProductProps){
         return (
             <View style={styles.productContainer}>
 
@@ -73,20 +71,24 @@ export default function ProductList() {
         )
     }
 
+    function backToLogin(){
+        storage.set('user', null)
+        navigation.navigate('Login')
+    }
 
     return (
         <View style={styles.container}>
+             <Button title='Logout' onPress={backToLogin}></Button>
+
             <Text>O que você procura?</Text>
             <TextInput value={filter} onChangeText={setFilter} style={styles.filterInput} placeholder="digete o nome do produto ou loja"/>
             <Text>Nós encrontramos {filteredItems.length} produtos.</Text>
 
-
             <FlatList data={filteredItems}
-                renderItem={({item}) => P(item)}
+                renderItem={({item}) => Product(item)}
                 contentContainerStyle={{ width: "100%" }}
                 style={styles.flatList}
-                
-            >   
+            >
 
             </FlatList>
         </View>

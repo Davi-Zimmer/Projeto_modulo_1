@@ -97,6 +97,10 @@ export default function RegisterUser(){
         return isValid
     }
 
+    function clearFormulary(){
+        [setName, setDocument, setAddress, setEmail, setPassword, setConfirmPassword].forEach(elmFunc => elmFunc(''))
+    }
+
     function handleRegister(){
 
         if( !validData() ) {
@@ -119,8 +123,8 @@ export default function RegisterUser(){
 
         }).then( () => {
             Alert.alert('Usuário cadastrado')
-
-        }).catch( console.log )
+            clearFormulary()
+        }).catch( console.log ) // quando der erro, poderia guardar os dados no localStorage
 
     }
 

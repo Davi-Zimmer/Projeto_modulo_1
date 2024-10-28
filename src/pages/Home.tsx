@@ -5,29 +5,11 @@ import { View, Text, Button, StyleSheet, Image, TouchableOpacity } from "react-n
 import { storage } from "../scripts/localStorage";
 
 
-type UserProps = {
-    name: string
-    image: string
-}
-
-function User({ name, image } : UserProps){
-
-    return (
-        <View style={styles.userContainer}>
-            <Image source={{uri: image}} style={{
-                width: 60,
-                height: 60,
-                borderRadius: 50
-            }}/>
-
-            <Text style={{fontSize: 15}}>{name}</Text>
-        </View>
-    )
-}
-
 
 // Custom Components \\
 import Header from "../components/Header";
+import User from "../components/User";
+import { useEffect, useState } from "react";
 
 
 export default function Home({navigation}: any){
@@ -39,11 +21,19 @@ export default function Home({navigation}: any){
         navigateTo('Login')
     }
 
+    const [userName, setUserName] = useState('')
+    
+    useEffect(() => {
+        storage.get('user').then( user => {
+            setUserName( user.name )
+        }).catch( console.warn )
+    }, [])
+
 
     return (
     <View>
         <Header>
-            <User name='Wall Termite' image="https://placehold.co/200.png" />
+            <User name={"Olá, " + userName} image="https://placehold.co/200.png" />
         </Header>
 
         <Button title='Logout' onPress={backToLogin}></Button>
@@ -87,3 +77,5 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     }
 })
+
+// https://coolors.co/image-picker

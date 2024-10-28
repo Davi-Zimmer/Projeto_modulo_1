@@ -19,6 +19,7 @@ import Home from "./src/pages/Home"
 import ProductList from "./src/pages/ProductList"
 import UsersList from "./src/pages/UsersList"
 import RegisterUser from "./src/pages/RegisterUser"
+import MovementsList from "./src/pages/MovementsList"
 
 
 export default function App() {
@@ -41,6 +42,7 @@ export default function App() {
           <Stack.Screen name="Products List"  component={ ProductList } ></Stack.Screen>
           <Stack.Screen name="Users"  component={ UsersList } ></Stack.Screen>
           <Stack.Screen name="Register User"  component={ RegisterUser } ></Stack.Screen>
+          <Stack.Screen name="Movements List"  component={ MovementsList } ></Stack.Screen>
 
         </Stack.Navigator>
       </NavigationContainer>
