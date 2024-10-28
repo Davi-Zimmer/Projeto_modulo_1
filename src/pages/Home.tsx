@@ -32,14 +32,14 @@ import Header from "../components/Header";
 
 export default function Home({navigation}: any){
     
+    const navigateTo = (pageName:string) => navigation.navigate( pageName )
+
     function backToLogin(){
-        navigation.navigate('Login')
+        storage.set('user', null)
+        navigateTo('Login')
     }
 
-    function navigateTo( pageName:string ){
-        navigation.navigate( pageName )
-    }
-    
+
     return (
     <View>
         <Header>
@@ -50,11 +50,11 @@ export default function Home({navigation}: any){
 
         <View style={styles.cardContainer}>
 
-            <TouchableOpacity style={styles.card} onPress={() => navigateTo("Products List")}>
+            <TouchableOpacity style={styles.button} onPress={() => navigateTo("Products List")}>
                 <Text>Estoque</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.card} onPress={() => navigateTo("Users")}>
+            <TouchableOpacity style={styles.button} onPress={() => navigateTo("Users")}>
                 <Text>Usuários</Text>
             </TouchableOpacity>
 
@@ -67,7 +67,7 @@ export default function Home({navigation}: any){
 
 
 const styles = StyleSheet.create({
-    card: {
+    button: {
         padding: 10,
         borderWidth: 1,
         borderColor: 'red',

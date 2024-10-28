@@ -14,6 +14,7 @@ import axios from "axios"
 
 // Custom Scripts \\
 import { storage } from "../scripts/localStorage"
+import { globalStyle } from "../styleSheets/globalStyleSheet"
 
 
 // Functions \\
@@ -56,7 +57,7 @@ export default function Login({navigation} : any) {
 
             }
 
-       })()
+        })()
 
     }, [])
 
@@ -89,12 +90,12 @@ export default function Login({navigation} : any) {
 
             <View style={styles.rowContainer}>
                 <Text style={styles.textInput}>Email</Text>
-                <TextInput style={styles.input} placeholder="user@gmail.com" value={email} onChangeText={setEmail}></TextInput>
+                <TextInput style={globalStyle.textInput} placeholder="user@gmail.com" value={email} onChangeText={setEmail}></TextInput>
             </View>
 
             <View style={styles.rowContainer}>
                 <Text style={styles.textInput}>Senha</Text>
-                <TextInput style={styles.input} value={password} onChangeText={setPassword}></TextInput>
+                <TextInput style={globalStyle.textInput} value={password} onChangeText={setPassword}></TextInput>
             </View>
 
             <TouchableOpacity onPress={handleLogin} style={styles.button}>
@@ -135,9 +136,4 @@ const styles = StyleSheet.create({
     
     textInput: {},
 
-    input: {
-        padding: 10,
-        borderWidth: 1,
-        borderColor: 'red'
-    },
 })
