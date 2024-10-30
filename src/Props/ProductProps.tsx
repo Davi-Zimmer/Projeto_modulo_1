@@ -37,5 +37,3 @@ export type MovementProps = {
     dataCriacao: string
     historico: Array<HistoricItemProps>
 }
-
-// type Props = { ProductProps:ProductProps }

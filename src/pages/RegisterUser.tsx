@@ -1,30 +1,32 @@
 // React \\
-import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity, Touchable, Alert, Button, ScrollView } from "react-native";
-import React, { useEffect, useState } from "react";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ScrollView } from "react-native"
+import React, { useState } from "react"
+
+
+// Others \\
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 
+import axios from "axios"
 
-import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet";
-import axios from "axios";
-
+import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet"
 import AppBar from "../components/AppBar";
+
 
 type InfoInputProps = {
     content: string
     value: string
     onChange?: React.Dispatch<React.SetStateAction<string>>
+    secureTextEntry?: boolean
 }
 
-function InfoInput({content, value, onChange} : InfoInputProps) {
+function InfoInput({content, value, onChange, secureTextEntry = false} : InfoInputProps) {
     
-    function handleChanges( newValue:string ) {
-        onChange?.( newValue )
-    }
+    const handleChanges = ( newValue:string ) => onChange?.( newValue )
     
     return (
-        <View style={styles.inputContainer}>
+        <View style={{ margin: 10 }}>
             <Text style={[globalStyle.font, styles.textInput]}>{content}</Text>
-            <TextInput value={value} onChangeText={handleChanges} style={[globalStyle.textInput, styles.input]}/>
+            <TextInput value={value} onChangeText={handleChanges} style={[globalStyle.textInput, {padding: 10}]} secureTextEntry={secureTextEntry} />
         </View>
     )
 }
@@ -37,9 +39,7 @@ type ButtonSelectionProps = {
 
 function ButtonSelection({ icon, onPress, selected }:ButtonSelectionProps) {
     
-    function handlePress(){
-        onPress?.()
-    }
+    const handlePress =() => onPress?.()
 
     const color = selected ? globalColors.positiveColor : globalColors.mainColor 
 
@@ -60,25 +60,24 @@ function DoubleSelection({children, firstSelected, onChange}: DoubleSelectionPro
     
     if( children.length != 2 ) throw new Error('Only 2 child nodes are allowed.')
     
-    function toggleSelection( index: number ){
-        onChange( index === 0 )
-    }
-
+    const toggleSelection = ( index: number ) => onChange( index === 0 )
 
     return (
         <View style={styles.DoubleSelectionStyle}>
-            {React.Children.map(children, (child, index) => {
-            console.log( firstSelected)
+            {React.Children.map(children, 
+                (child, index) => {
 
-                return (React.cloneElement( child, { 
-                    onPress: () => toggleSelection(index),
-                    selected: (firstSelected ? 0 : 1) == index
-                }))
-            })}
+                    return (React.cloneElement( child, { 
+                        onPress: () => toggleSelection(index),
+                        selected: (firstSelected ? 0 : 1) == index
+                    }))
+
+                })
+                
+            }
         </View>
     )
 }
-
 
 export default function RegisterUser({navigation}: any){
     
@@ -138,7 +137,7 @@ export default function RegisterUser({navigation}: any){
 
         <>
             <AppBar pageName="Register Movement" goBack={navigation.goBack }/>
-            <View style={[globalStyle.container, styles.container]}>
+            <View style={[globalStyle.container, {padding: 10}]}>
             
                 <ScrollView style={styles.inputsContainer}>
                     <DoubleSelection firstSelected={isDriver} onChange={setIsDriver}>
@@ -151,8 +150,8 @@ export default function RegisterUser({navigation}: any){
 
                     <InfoInput content="Endereço" value={address} onChange={setAddress}/>
                     <InfoInput content="Email" value={email} onChange={setEmail}/>
-                    <InfoInput content="Senha" value={password} onChange={setPassword}/>
-                    <InfoInput content="Confirme a senha" value={confirmPassword} onChange={setConfirmPassword}/>
+                    <InfoInput content="Senha" value={password} onChange={setPassword} secureTextEntry />
+                    <InfoInput content="Confirme a senha" value={confirmPassword} onChange={setConfirmPassword} secureTextEntry/>
                     
                     <TouchableOpacity style={globalStyle.button} onPress={handleRegister}>
                         <Text style={globalStyle.buttonText}>Cadastrar</Text>
@@ -175,10 +174,6 @@ const styles = StyleSheet.create({
 
     },
 
-    input: {
-        padding: 10
-    },
-
     textInput: {
         color: globalColors.mainColor,
         fontSize: 15
@@ -190,18 +185,10 @@ const styles = StyleSheet.create({
         padding: 20,
         borderColor: globalColors.mainColor
     },
-
-    inputContainer: {
-        margin: 10,
-    },
      
     DoubleSelectionStyle: {
         flexDirection: 'row',
         justifyContent: 'space-around'
-    },
-
-    container: {
-        padding: 10,
     }
 
 })

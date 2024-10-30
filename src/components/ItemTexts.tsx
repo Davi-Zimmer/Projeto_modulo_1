@@ -1,34 +1,23 @@
 // React \\
-import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity, Touchable, Alert, Button, FlatList, ImageBackground } from "react-native";
-import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet";
+import { View, Text } from "react-native"
 
+// Style \\
+import { globalColors } from "../styleSheets/globalStyleSheet"
 
 export type ItemTextsProps = {
     title:string
     description:string
+    color?: string
 }
 
-export default function ItemTexts({title, description}: ItemTextsProps) {
+export default function ItemTexts({title, description, color=globalColors.mainColor}: ItemTextsProps) {
+
+    const style = { color }
+
     return (
-        <View style={styles.itemTextContainer}>
-            <Text style={[{fontWeight: 'bold'}, styles.fistText]}>{title}</Text>
-            <Text style={styles.secondText}>{description}</Text>
+        <View style={{ marginVertical: 10 }}>
+            <Text style={[{fontWeight: 'bold'}, {color:globalColors.mainColor}]}>{title}</Text>
+            <Text style={style}>{description}</Text>
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-
-    fistText: {
-        color: globalColors.mainColor,
-    },
-
-    secondText: {
-        color: globalColors.mainColor,
-    },
-
-    itemTextContainer: {
-        marginVertical: 10,
-    }
-
-})

@@ -1,12 +1,13 @@
 // React \\
-import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity, Touchable, Alert, Button, ScrollView } from "react-native";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react"
-
-
-import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet"
-import axios from "axios"
 import { Picker } from "@react-native-picker/picker";
 
+
+// Others \\
+import axios from "axios"
+
+import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet"
 import { ProductProps } from "../Props/ProductProps";
 import AppBar from "../components/AppBar";
 
@@ -19,12 +20,29 @@ type BranchProps = {
     longitude: number
 }
 
-type ProductsOptionsProps = {
-    quantity: number
-    branch_name: string
-    product_id: number
-    branch_id: number
+type CustomPickerProps = {
+    selectedValue: string
+    items: Array< BranchProps | ProductProps>
+    label?: string
+    setter: (a:string) => void
+    mapping: (elm: any, i: number) => JSX.Element
 }
+
+function CustomPicker({selectedValue, setter, items, mapping, label}:CustomPickerProps){
+    return (
+        <View style={styles.inputsContainers}>
+            <Text style={[styles.buttonText, globalStyle.font]}>{label}</Text>
+            <View style={styles.picker}>
+                <Picker selectedValue={ selectedValue } onValueChange={ setter }  style={styles.picker}>
+                    {
+                        items.map( mapping )
+                    }
+                </Picker>
+            </View>
+        </View>
+    )
+}
+
 
 export default function RegisterMovement({navigation} : any) {
 
@@ -33,7 +51,6 @@ export default function RegisterMovement({navigation} : any) {
     const [desiredProductId, setDesiredProductId]       = useState('1')
 
     const [branches, setBranches] = useState<Array<BranchProps>>([])
-    const [productsOptions, setProductsOptions] = useState<Array<ProductsOptionsProps>>([])
 
     const [products, setProducts] = useState<Array<ProductProps>>([])
     const [allProducts, setAllProducts] = useState<Array<ProductProps>>([])
@@ -41,7 +58,7 @@ export default function RegisterMovement({navigation} : any) {
     const [productQuantity, setProductQuantity] = useState('1')
     const [description, setDescription] = useState('')
     
-    
+    // pega a lista de produtos e a lista de filiais
     useEffect(() => {
 
         axios.get(process.env.EXPO_PUBLIC_API_URL + '/products').then( res => 
@@ -53,11 +70,6 @@ export default function RegisterMovement({navigation} : any) {
             setBranches( res.data )
         ).catch( console.error )
 
-
-        axios.get(process.env.EXPO_PUBLIC_API_URL + '/products/options').then( res => 
-            setProductsOptions( res.data )
-        ).catch( console.error )
-
     }, [])
 
     function clearInputs(){
@@ -65,14 +77,15 @@ export default function RegisterMovement({navigation} : any) {
         setProductQuantity('1')
     }
 
+    // salva o movimento no backend
     function register() {
-         
+        
         const movement = {
             originBranchId,
             destinationBranchId,
             productId: desiredProductId, 
             quantity: productQuantity,
-            
+            description
         }
 
         axios.post(process.env.EXPO_PUBLIC_API_URL + '/movements', movement).then( () => {
@@ -93,7 +106,7 @@ export default function RegisterMovement({navigation} : any) {
             return 
         }
         
-        const quantity = productsOptions[ parseInt(desiredProductId) ].quantity
+        const quantity = products[ parseInt(desiredProductId) ].quantity
         
         if( parseInt(productQuantity) > quantity ){
             Alert.alert(`A quantia disponível do produto atualmente é de ${quantity} Unidades.`)
@@ -104,9 +117,10 @@ export default function RegisterMovement({navigation} : any) {
 
     }
 
+    // pega os produtos da filial
     function getBranchProducts(){
         
-        if( !branches[0] ) return []
+        if( !branches[0] ) return
 
         const branchName = branches[ parseInt(originBranchId)-1 ].name
 
@@ -116,9 +130,12 @@ export default function RegisterMovement({navigation} : any) {
 
     }
 
-    useEffect(() => {
-        getBranchProducts( )
-    }, [originBranchId, branches, allProducts])
+    function changeOriginBranch( branchId:string ){
+       setOriginBranchId( branchId )
+       setDesiredProductId( '0' )
+    }
+
+    useEffect(() => getBranchProducts( ), [originBranchId, branches, allProducts])
 
     return(
         <>
@@ -127,57 +144,41 @@ export default function RegisterMovement({navigation} : any) {
 
                 <View style={styles.posContainer}>
 
-                    <View style={styles.inputsContainers}>
-                        <Text style={[styles.buttonText, globalStyle.font]}>Filial de Origem</Text>
-                        <View style={styles.picker}>
-                            <Picker selectedValue={ originBranchId } onValueChange={ setOriginBranchId }  style={styles.picker}>
-                                {
-                                    branches.map(
-                                            (elm, i) => <Picker.Item style={styles.pickerItem}
-                                            label={elm.name}
-                                            value={elm.id}
-                                            key={i}
-                                        />
-                                    )
-                                }
-                            </Picker>
-                        </View>
-                    </View>
+                    <CustomPicker 
+                        selectedValue={originBranchId}
+                        setter={changeOriginBranch}
+                        items={branches}
+                        mapping={ (elm, i) => <Picker.Item style={styles.pickerItem}
+                            label={elm.name}
+                            value={elm.id}
+                            key={i} /> 
+                        }
+                    />
 
-                    <View style={styles.inputsContainers}>
-                        <Text style={[styles.buttonText, globalStyle.font]}>Filial de Destino</Text>
-                        <View style={styles.picker}>
-                            <Picker selectedValue={ destinationBranchId } onValueChange={ setDestinationBranchId } style={styles.picker}>
-                                {
-                                    branches.map( 
-                                        (elm, i)=> <Picker.Item style={ styles.pickerItem }
-                                            label={elm.name}
-                                            value={elm.id}
-                                            key={i} 
-                                        />
-                                    )
-                                }
-                            </Picker>
-                        </View>
-                    </View>
+                    <CustomPicker 
+                        selectedValue={destinationBranchId}
+                        setter={setDestinationBranchId}
+                        items={branches}
+                            mapping={ (elm, i)=> <Picker.Item style={ styles.pickerItem }
+                                label={elm.name}
+                                value={elm.id}
+                                key={i} 
+                            />
+                        }
+                    />
 
-                    <View style={styles.inputsContainers}>
-                        <Text style={[styles.buttonText, globalStyle.font]}>Produto Desejado</Text>
-                        <View style={styles.picker}>
-                            <Picker selectedValue={ desiredProductId } onValueChange={ setDesiredProductId } style={styles.picker}>
-                                {
-                                    products.map( 
-                                        (elm, i) => <Picker.Item style={ styles.pickerItem }
-                                            label={elm.product_name + `: ${elm.quantity} Un.`}
-                                            value={i}
-                                            key={i} 
-                                            
-                                        />
-                                    )
-                                }
-                            </Picker>
-                        </View>
-                    </View>
+                    <CustomPicker
+                        selectedValue={desiredProductId}
+                        setter={setDesiredProductId}
+                        items={products}
+                            mapping={ (elm, i) => <Picker.Item style={ styles.pickerItem }
+                                label={elm.product_name + `: ${elm.quantity} Un.`}
+                                value={i}
+                                key={i} 
+                                
+                            />
+                        }
+                    />
 
                     <View style={styles.inputsContainers}>
                         <Text style={[styles.buttonText, globalStyle.font]}>Quantia Desejada</Text>
@@ -186,7 +187,7 @@ export default function RegisterMovement({navigation} : any) {
 
                     <View style={styles.inputsContainers}>
                         <Text style={[styles.buttonText, globalStyle.font]}>Observações</Text>
-                        <TextInput style={[globalStyle.textInput, styles.description]} multiline value={description} onChangeText={setDescription}></TextInput>
+                        <TextInput style={[globalStyle.textInput, styles.padding]} multiline value={description} onChangeText={setDescription}></TextInput>
                     </View>
 
                     <TouchableOpacity style={globalStyle.button} onPress={ValidateData}>
@@ -194,19 +195,13 @@ export default function RegisterMovement({navigation} : any) {
                     </TouchableOpacity>
                 </View>
 
-                </ScrollView>
+            </ScrollView>
         </>
     )
 }
 
 const styles = StyleSheet.create({
-    description: {
-        padding: 20
-    },
-
-    textInput: {
-        padding: 20
-    },
+    padding: {padding: 20},
 
     container: {
         padding: 10,

@@ -1,43 +1,64 @@
 // React \\
-import { View, Text, Button, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native"
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-
-import { storage } from "../scripts/localStorage";
+import { useEffect, useState } from "react"
 
 
 // Custom Components \\
-import Header from "../components/Header";
-import User from "../components/User";
-import { useEffect, useState } from "react";
-import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet";
+import Header from "../components/Header"
+import User from "../components/User"
+
+// Others \\
+import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet"
+import { storage } from "../scripts/localStorage"
+
+
+type IconProps = {
+    name: string
+    size: number
+    color: string
+}
+
+type CustomButtonProps = {
+    onPress: () => void
+    text: string
+    icon: IconProps
+}
+
+function CustomButton({onPress, text, icon}:CustomButtonProps){
+    return (
+        <TouchableOpacity style={globalStyle.optionButton} onPress={onPress}>
+            <Text style={[globalStyle.optionText, globalStyle.font]}>{text}</Text>
+            <MaterialCommunityIcons name={icon.name as any} color={icon.color} size={icon.size}/>
+        </TouchableOpacity>
+    )
+}
 
 export default function Home({navigation}: any){
     
     const navigateTo = (pageName:string) => navigation.navigate( pageName )
 
-    function backToLogin(){
+    function logout(){
         storage.set('user', null)
         navigateTo('Login')
     }
 
     const [userName, setUserName] = useState('')
     
+    // pega o usuario no storage
     useEffect(() => {
-        storage.get('user').then( user => {
-            setUserName( user.name )
-        }).catch( console.warn )
-
+        storage.get('user')
+        .then( user => setUserName( user.name ))
+        .catch( console.warn )
     }, [])
-
 
     return (
         <View style={[globalStyle.container]}>
             <Header style={globalStyle.header}>
                 <User name={"Olá, " + userName} image="https://placehold.co/200.png" />
 
-                <TouchableOpacity onPress={backToLogin}>
+                <TouchableOpacity onPress={logout}>
                     {
-                        // <Text style={{color: '#86A5FC'}}>Logout</Text>
                         <MaterialCommunityIcons name="logout" color={globalColors.mainColor} size={25}/>
                     }
                 </TouchableOpacity>
@@ -45,28 +66,20 @@ export default function Home({navigation}: any){
 
             <View style={globalStyle.optionsContainer}>
 
-                <TouchableOpacity style={globalStyle.optionButton} onPress={() => navigateTo("Products List")}>
-                    <Text style={[globalStyle.optionText, globalStyle.font]}>Estoque</Text>
-                    <MaterialCommunityIcons name="store-check-outline" color={globalColors.mainColor} size={40}/>
-                </TouchableOpacity>
+                <CustomButton text="Estoque" onPress={() => navigateTo("Products List")} icon={{
+                    name:'store-check-outline',
+                    color: globalColors.mainColor,
+                    size: 40
+                }}/>
 
-                <TouchableOpacity style={globalStyle.optionButton} onPress={() => navigateTo("Users")}>
-                    <Text style={[globalStyle.optionText, globalStyle.font]}>Usuários</Text>
-                    <MaterialCommunityIcons name="account-group-outline" color={globalColors.mainColor} size={40}/>
-                </TouchableOpacity>
+                <CustomButton text="Usuários" onPress={() => navigateTo("Users")} icon={{
+                    name:'account-group-outline',
+                    color: globalColors.mainColor,
+                    size: 40
+                }}/>
 
             </View>
-
             
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-
-    userContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between'
-    }
-})

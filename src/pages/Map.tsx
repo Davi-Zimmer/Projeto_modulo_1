@@ -1,8 +1,12 @@
 // React \\
-import {View, Text, SafeAreaView, Alert, TouchableOpacity, StyleSheet, StatusBar, Button} from "react-native"
+import {View, Text, TouchableOpacity, StyleSheet } from "react-native"
 import {useState, useEffect} from "react"
+
 import MapView, { Marker } from "react-native-maps"
 import { useRoute } from "@react-navigation/native"
+
+
+// Others \\
 import { LocalizationProps } from "../Props/ProductProps"
 import { globalColors } from "../styleSheets/globalStyleSheet"
 
@@ -34,21 +38,22 @@ export default function Map() {
         });
     };
 
+
+    // altera as coordenadas pra mostrar o motorista ou o destino
     useEffect( () => {
 
+        let [lati, long] = [userLocation.latitude, userLocation.longitude]
+
         if( focusInUser ){
-            updateRegion( destinationLocation.latitude, destinationLocation.longitude)
-        } else {
-            updateRegion( userLocation.latitude, userLocation.longitude)
-        }
+            [ lati, long ] = [destinationLocation.latitude, destinationLocation.longitude]
+        } 
+
+        updateRegion( lati, long )
 
     }, [focusInUser])
 
 
-
-    function goToDesteny(){
-        setFocusInUser( !focusInUser )
-    }
+    const goToDesteny = () => setFocusInUser( !focusInUser )
 
     return (
         
@@ -70,8 +75,8 @@ export default function Map() {
                 <Marker
                     title='Destino' 
                     coordinate={{
-                    latitude: destinationLocation.latitude,
-                    longitude: destinationLocation.longitude
+                        latitude: destinationLocation.latitude,
+                        longitude: destinationLocation.longitude
                     }}>
 
                 </Marker>
@@ -79,9 +84,9 @@ export default function Map() {
                 <Marker
                     title='Destino' 
                     coordinate={{
-                    latitude: userLocation.latitude,
-                    longitude: userLocation.longitude
-                }}>
+                        latitude: userLocation.latitude,
+                        longitude: userLocation.longitude
+                    }}>
 
                 </Marker>
                 

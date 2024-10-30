@@ -1,6 +1,6 @@
 
 // React \\
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image, FlatList, Button} from "react-native"
+import { View, Text, TextInput, StyleSheet, Image, FlatList } from "react-native"
 import { useEffect, useState } from "react"
 
 
@@ -8,16 +8,16 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 
 
-// Custom Scripts \\
+// Others \\
 import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet"
-import { useFocusEffect } from "@react-navigation/native"
 import { FilterList } from "../scripts/FilterItems"
-import { storage } from "../scripts/localStorage"
-import AppBar from "../components/AppBar"
 
+import AppBar from "../components/AppBar"
 import { ProductProps } from "../Props/ProductProps"
 
+
 type ProductArray = Array<ProductProps>
+
 
 export default function ProductList({navigation}: any) {
 
@@ -27,18 +27,19 @@ export default function ProductList({navigation}: any) {
 
     const [filter, setFilter] = useState('')
 
+    // pega os produtos do backend
     useEffect(() => {
-        axios.get(process.env.EXPO_PUBLIC_API_URL + '/products').then( res => {
-
-            setProducts( res.data )
-
-        }).catch( err => console.warn(err) )
+        axios.get(process.env.EXPO_PUBLIC_API_URL + '/products')
+            .then( res =>  setProducts( res.data ))
+            .catch( console.error )
     }, [])
 
-    useEffect(()=> {
+    // filtra os produtos de acordo com a pesquisa
+    useEffect(() => {
         const filteredList = FilterList(products, ['product_name', "branch_name"], filter)
         setFilteredItems( filteredList )
-    }, [products])
+        console.log('d')
+    }, [filter, products])
 
     function Product({product_name, branch_name, image_url, quantity, description}: ProductProps){
         return (
@@ -59,22 +60,12 @@ export default function ProductList({navigation}: any) {
         )
     }
 
-    function backToLogin(){ storage.set('user', null); navigation.navigate('Login') }
-
     return (
         <View style={[globalStyle.container, {flex:1}]}>
-
-            {
-                // <Button title='Logout' onPress={backToLogin}></Button>
-            }
 
             <AppBar pageName="O que você procura?" goBack={ navigation.goBack } />
             
             <View style={styles.inputContainer}>
-
-                {/*
-                    <Text style={[globalStyle.font,  styles.mainColorText, styles.mainText]}>O que você procura?</Text>
-                */}
 
                 <TextInput 
                     value={filter} onChangeText={setFilter} 
@@ -88,7 +79,7 @@ export default function ProductList({navigation}: any) {
             <FlatList data={filteredItems}
                 renderItem={({item}) => Product(item)}
                 contentContainerStyle={{ width: "100%" }}
-                style={styles.flatList}
+                style={{ marginTop: 10 }}
             >
 
             </FlatList>
@@ -115,7 +106,7 @@ const styles = StyleSheet.create({
 
     inputContainer: {
         paddingHorizontal: 10,
-        backgroundColor: globalColors.casing // 'rgba(0, 0, 0, .1)'
+        backgroundColor: globalColors.casing
     },
 
     mainColorText: {
@@ -142,22 +133,17 @@ const styles = StyleSheet.create({
     },
 
     productContainer:{
-        backgroundColor: globalColors.casing, // 'rgba(0, 0, 0, .1)',
+        backgroundColor: globalColors.casing,
         margin: 10,
         marginHorizontal: 40,
         padding: 20,
         borderRadius: 5
     },
 
-    flatList: {
-        marginTop: 10
-    },
-
     filterInput: {
         padding: 10,
         borderBottomWidth: 1,
-        borderColor: 'blue',
         margin: 5
-    },
+    }
 
 })

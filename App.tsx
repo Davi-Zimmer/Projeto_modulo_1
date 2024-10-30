@@ -24,26 +24,7 @@ import MovementsList from "./src/pages/MovementsList"
 import RegisterMovement from "./src/pages/RegisterMovement"
 import ViewMovements from "./src/pages/ViewMovements"
 import Map from "./src/pages/Map"
-import { globalColors } from "./src/styleSheets/globalStyleSheet"
 
-function AppHeader(){
-    return {
-
-      header: ( { navigation }:any ) => {
-
-        return (
-        
-          <View style={styles.appHeader}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <MaterialCommunityIcons name="chevron-left" size={50} color={globalColors.mainColor}/>
-            </TouchableOpacity>
-          </View>
-        )
-
-      }
-
-    }
-}
 
 function emptyHeader(){
   return {header: () => <></>}
@@ -52,11 +33,23 @@ function emptyHeader(){
 
 export default function App() {
 
+  const windows = [
+    "Login", Login,
+    "Home", Home,
+    "Products List", ProductList,
+    "Users", UsersList,
+    "Register User", RegisterUser,
+    "Movements List", MovementsList,
+    "Register Movement", RegisterMovement,
+    "View Movements", ViewMovements
+  ]
+
   return (
+
     <SafeAreaView style={{flex:1}}>
       <StatusBar />
       <NavigationContainer>
-        <Stack.Navigator initialRouteName='Login'>
+        <Stack.Navigator initialRouteName='Login' >
 
           <Stack.Screen name="Login" component={ Login } options={emptyHeader()} />
           <Stack.Screen name="Home"  component={ Home } options={ emptyHeader() } />
@@ -68,17 +61,9 @@ export default function App() {
           <Stack.Screen name="View Movements" component={ ViewMovements } options={ emptyHeader() } />
           <Stack.Screen name="Map" component={ Map } initialParams={{ userLocation:null, destinationLocation:null }}></Stack.Screen>
          
-
         </Stack.Navigator>
       </NavigationContainer>
 
     </SafeAreaView>
   )
-}
-
-
-const styles = {
-  appHeader: {
-    backgroundColor: globalColors.casing
-  }
 }

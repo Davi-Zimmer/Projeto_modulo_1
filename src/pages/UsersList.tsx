@@ -1,16 +1,16 @@
 // React \\
-import { View, Text, Button, StyleSheet, Image, TouchableOpacity, FlatList, Switch, Touchable, Alert } from "react-native";
-import { useEffect, useState } from "react";
-import { MaterialCommunityIcons } from '@expo/vector-icons'
-import AppBar from "../components/AppBar";
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Switch, Alert } from "react-native"
+import { useEffect, useState, useCallback } from "react"
 
 // Others \\
 import axios from "axios";
 
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 
-// Scripts \\
-import { storage } from "../scripts/localStorage"
-import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet";
+
+import AppBar from "../components/AppBar"
+import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet"
+import { useFocusEffect } from "@react-navigation/native";
 
 
 type UserDataProps = {
@@ -53,13 +53,10 @@ function User({name, status, onChange, profile}:UserProps){
     
         if (profile == 'admin') profileType = 'account-cog-outline'; else
         if (profile == 'motorista') profileType = 'car-hatchback'; else
-        if (profile == 'filial' ) profileType = 'office-building-marker-outline';
+        if (profile == 'filial' ) profileType = 'office-building-marker-outline'
     
-
-    } else {
-        profileType = 'account-cancel-outline'
-    }
-
+    } else profileType = 'account-cancel-outline'
+    
     return (
         
         <View style={[styles.userContainer, newStyle]}>
@@ -78,22 +75,23 @@ export default function UsersList({navigation} : any) {
 
     // pega todos os usuários da database
     function getUsers() {
-        axios.get(process.env.EXPO_PUBLIC_API_URL + '/users').then( res => {
-          
-            // const item = clone( res.data[0] )
-            setUsers( res.data )
-
-        })
+        axios.get(process.env.EXPO_PUBLIC_API_URL + '/users').then( res => setUsers( res.data ))
+        console.log('pegando usuários')
     }
 
-    useEffect( getUsers, [])
+    useFocusEffect(
+        useCallback(() => {
+             getUsers()
+        }, []) 
+    );
+
 
     // atualiza o status do usuario de acordo com o id
     function updateUser( id:number, status:number ){
 
-        axios.patch(process.env.EXPO_PUBLIC_API_URL + `/users/${id}/toggle-status`, {status}).then( () => {
-            getUsers()
-        } ).catch( err => {
+        axios.patch(process.env.EXPO_PUBLIC_API_URL + `/users/${id}/toggle-status`, {status})
+        .then( getUsers )
+        .catch( err => {
             console.error( err )
             Alert.alert('Não foi possível atualizar o status do usuário.')
         })
@@ -113,7 +111,7 @@ export default function UsersList({navigation} : any) {
 
             <View style={styles.flatListContainer}>
                 <FlatList data={users}
-                    style={styles.flatList}
+                    style={{padding: 20}}
                     numColumns={2}
                     columnWrapperStyle={{
                         justifyContent: 'center',
@@ -142,7 +140,6 @@ const styles = StyleSheet.create({
         gap: 20
     },
 
-
     newAccount: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -150,7 +147,6 @@ const styles = StyleSheet.create({
         borderWidth: 0,
         alignSelf: 'flex-end',
         margin: 10,
-        
     },
 
     userName: {
@@ -160,12 +156,8 @@ const styles = StyleSheet.create({
     },
 
     flatListContainer: {
-        backgroundColor: 'rgba(0, 0, 0, .1)', //globalColors.casing,
+        backgroundColor: 'rgba(0, 0, 0, .1)',
         margin: 20
-    },
-
-    flatList: {
-        padding: 20,
     },
 
     userInfo:{

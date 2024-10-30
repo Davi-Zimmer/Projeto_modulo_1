@@ -10,13 +10,10 @@ import { CommonActions } from "@react-navigation/native"
 // Others \\
 import axios from "axios"
 
-
-// Custom Scripts \\
 import { storage } from "../scripts/localStorage"
 import { globalStyle, globalColors } from "../styleSheets/globalStyleSheet"
 
 
-// Functions \\
 function getRouteByProfile( userProfile:string ){
 
     // default drivers route
@@ -31,8 +28,6 @@ function getRouteByProfile( userProfile:string ){
         route = 'Movements List'
     }
 
-    // console.warn( route )
-
     return route
 }
 
@@ -41,7 +36,6 @@ export default function Login({navigation}:any) {
     const [ email, setEmail ]       = useState('admin@gmail.com') // ('A@gmail.com') // admin@gmail.com // w@gmail.com
     const [ password, setPassword ] = useState('123456')          // ('12')          // 123456 // 1
 
-    // storage.set('user', null)
 
     // login e redirecionamento automatico apartir da conta no storage
     useEffect(() => {
@@ -85,8 +79,6 @@ export default function Login({navigation}:any) {
 
     }
 
-    // style={globalStyle.backgroundPage}
-
     return (
         <View style={ [globalStyle.container,  {backgroundColor: '#3D3152'}] }>
             <View style={[styles.posContainer]}>
@@ -108,8 +100,6 @@ export default function Login({navigation}:any) {
                     </TouchableOpacity>
                 </View>
             </View>
-
-            
         </View>
     )
 }
@@ -154,13 +144,9 @@ const styles = StyleSheet.create({
     rowContainer: {
         marginVertical: 10
     },
-
-    container: {
-        
-    },
     
     textInput: {
-        color: '#86A5FC'   
+        color: globalColors.mainColor   
     },
 
 })

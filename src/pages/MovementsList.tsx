@@ -1,49 +1,42 @@
 // React \\
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image, FlatList, Button} from "react-native"
-import { useDeferredValue, useEffect, useState } from "react"
+import { View, Text, TouchableOpacity, StyleSheet, FlatList } from "react-native"
+import { useEffect, useState } from "react"
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 
-// React Navigation \\
-import { CommonActions } from "@react-navigation/native"
 
 // Others \\
 import axios from "axios"
 
+
 // Custom Components \\
 import Header from "../components/Header"
+import ItemTexts from "../components/ItemTexts";
+import User from "../components/User"
+
 
 // Custom Scripts \\
 import { storage } from "../scripts/localStorage"
 import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet"
-import User from "../components/User"
-
-import ItemTexts from "../components/ItemTexts";
-
 import { MovementProps  } from "../Props/ProductProps";
+
 
 export default function MovementsList({navigation}:any){
 
     const [movements, setMovements] = useState<Array<MovementProps>>([])
     const [userName, setUserName] = useState('')
 
+    // pega a lista de movimentos do backend e o user no storage
     useEffect(() => {
         
-        axios.get(process.env.EXPO_PUBLIC_API_URL + '/movements').then( res => {
-            
-            setMovements( res.data )
-            
-        }).catch( console.error )
+        axios.get(process.env.EXPO_PUBLIC_API_URL + '/movements')
+            .then( res => setMovements( res.data ))
+            .catch( console.error )
 
         storage.get('user').then( user => setUserName(user.name)).catch( console.error )
+
     }, []) 
 
-    function addMoviment() {
-        navigation.navigate('Register Movement')
-    }
-
-    function viewMovements() {
-        navigation.navigate('View Movements')
-    }
+    const addMoviment = () => navigation.navigate('Register Movement')
     
     function backToLogin(){
         storage.set('user', null)
@@ -68,7 +61,6 @@ export default function MovementsList({navigation}:any){
                 <User name={'Ola, ' + userName} image="https://placehold.co/200.png" />
                 <TouchableOpacity onPress={backToLogin}>
                     {
-                        // <Text style={{color: '#86A5FC'}}>Logout</Text>
                         <MaterialCommunityIcons name="logout" color={globalColors.mainColor} size={25}/>
                     }
                 </TouchableOpacity>
@@ -78,12 +70,12 @@ export default function MovementsList({navigation}:any){
                 <Text style={styles.text}>Adicionar Movimento</Text>
             </TouchableOpacity>
 
-            <View style={styles.flatListContainer}>
+            <View style={{ flex: 1 }}>
                 <FlatList
                     data={movements}
                     style={styles.asd}
                     renderItem={({ item }) => render(item)}
-                    ListFooterComponent={<View style={{ height: 180}} />} >
+                    ListFooterComponent={<View style={{ height: 40}} />} >
                 </FlatList>
             </View>
 
@@ -92,9 +84,7 @@ export default function MovementsList({navigation}:any){
 }
 
 const styles = StyleSheet.create({
-    flatListContainer: {
-        // padding: 20,
-    },
+ 
     button: {
         backgroundColor: globalColors.alternativeButtonColor,
         padding: 10,
@@ -112,7 +102,6 @@ const styles = StyleSheet.create({
     asd: {
         width: '100%',
         height: '100%',
-        // backgroundColor: 'rgba(0, 0, 0, .1)',
         padding: 20,
     },
 
@@ -124,20 +113,3 @@ const styles = StyleSheet.create({
         backgroundColor: globalColors.casing,
     }
 })
-
-
-/*
- <View style={globalStyle.optionsContainer}>
-            
-    <TouchableOpacity onPress={addMoviment} style={globalStyle.optionButton}>
-        <Text style={[globalStyle.optionText, globalStyle.font]}>Adicionar Movimentação</Text>
-    </TouchableOpacity>
-    
-    {
-        <TouchableOpacity onPress={viewMovements} style={globalStyle.optionButton}>
-            <Text style={[globalStyle.optionText, globalStyle.font]}>Visualizar movimentos</Text>
-        </TouchableOpacity>
-    }
-
-    </View>
-*/

@@ -1,5 +1,8 @@
-import { View, Text, Button, StyleSheet, Image, TouchableOpacity } from "react-native";
-import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet";
+// React \\
+import { View, Text, StyleSheet, Image } from "react-native"
+
+// Style \\
+import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet"
 
 type UserProps = {
     name: string
@@ -15,7 +18,7 @@ export default function User({ name, image } : UserProps){
                 height: 50,
                 borderRadius: 50,
                 borderWidth: 2,
-                borderColor: '#86FC91'
+                borderColor: globalColors.positiveColor
             }}/>
 
             <Text style={[{fontSize: 15, color:globalColors.mainColor}, globalStyle.font]} >{name}</Text>
@@ -28,7 +31,5 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 10
-
-        // justifyContent: 'space-between'
     }
 })

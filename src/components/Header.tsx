@@ -1,11 +1,14 @@
-import {View, Text, StyleSheet, ViewStyle } from "react-native"
+// React \\
+import {View, StyleSheet, ViewStyle } from "react-native"
+
+
+// Style \\
 import { globalColors } from "../styleSheets/globalStyleSheet"
 
-interface HeaderStyle extends ViewStyle {}
 
 type HeaderProps = {
     children?: React.ReactNode,
-    style?: HeaderStyle
+    style?: ViewStyle
 }
 
 export default function Header({children, style} : HeaderProps){

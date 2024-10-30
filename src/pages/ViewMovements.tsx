@@ -1,19 +1,23 @@
 // React \\
-import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity, Touchable, Alert, Button, FlatList, ImageBackground } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, Alert } from "react-native"
 import React, { useEffect, useState } from "react"
 
-// Custom Things \\
-import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet"
-import { storage } from "../scripts/localStorage";
-import { MovementProps  } from "../Props/ProductProps";
-import ItemTexts from "../components/ItemTexts";
+
+// Custom Components\\
+import ItemTexts from "../components/ItemTexts"
+import AppBar from "../components/AppBar"
+
+
+// Others \\
+import axios from "axios"
+
+import * as ImagePicker from 'expo-image-picker'
+
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 
-
-import axios from "axios"
-import * as ImagePicker from 'expo-image-picker';
-import AppBar from "../components/AppBar";
-
+import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet"
+import { MovementProps  } from "../Props/ProductProps"
+import { storage } from "../scripts/localStorage"
 
 export default function ViewMovements({navigation}:any){
 
@@ -25,29 +29,34 @@ export default function ViewMovements({navigation}:any){
     const reload = () => setDummy(!dummy)
 
     function getMovements(){
-        axios.get(process.env.EXPO_PUBLIC_API_URL + '/movements').then( res => setMovements(res.data) )
+        axios.get(process.env.EXPO_PUBLIC_API_URL + '/movements')
+        .then( res => setMovements(res.data) )
         .catch( console.error )
     }
 
-    useEffect( () => {
-        getMovements()
-    }, [dummy])
+    useEffect( getMovements, [dummy])
 
     useEffect( () => {
         
         getMovements()
 
-        storage.get('user').then(res => {
-            setUserName( res.name )
-        })
+        storage.get('user').then( res => setUserName( res.name ))
+
     }, [])
   
     async function openCamera(){
+        const permission = await ImagePicker.requestCameraPermissionsAsync()
+
+        if( !permission.granted ){
+            Alert.alert('Não foi possível usar a camera.')
+            return
+        }
+
         const cam = await ImagePicker.launchCameraAsync()
 
         const asset = cam.assets?.[0]
         
-        if( !asset ) return
+        if( !asset || cam.canceled ) return
         
         return {
             uri: asset.uri,
@@ -57,45 +66,37 @@ export default function ViewMovements({navigation}:any){
         
     }
 
-    function updateMovement( status:string, {id, produto} : MovementProps ){
+    // inicia e encerra a entrega de acordo com o status
+    function updateMovement( status:string, { id } : MovementProps ){
         
         let endPoint = ''
 
-        if( status == 'created'){
-            // iniciar entrega
-            endPoint = 'start'
-
-        } else {
-            // encerrar entrega
-            endPoint = 'end'
-            
-        }
+        if( status == 'created') endPoint = 'start' // iniciar entrega
+        else endPoint = 'end' // encerrar entrega
 
         openCamera().then( imgObject => {
 
+            if( !imgObject ) return
+            
             const data = new FormData()
             
             data.append('motorista', userName)
 
-            //@ts-ignore      tenho medo da linha de baixo (erro quântico: é blob, mas não é blob)
+            //@ts-ignore      tenho medo da linha de baixo
             data.append('file', imgObject)
     
-            axios.put(process.env.EXPO_PUBLIC_API_URL + `/movements/${id}/${endPoint}`, data, 
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
+            axios.put(process.env.EXPO_PUBLIC_API_URL + `/movements/${id}/${endPoint}`, data, {
+                    headers: {'Content-Type': 'multipart/form-data'}
                 }
-            ).then(()=>{
-                console.log('O produto foi atualizado')
-                reload()
-
-            }).catch( console.log )
+            )
+            .then( reload )
+            .catch( console.log )
         })
         
     }
 
-    function gotToMap( {origem, destino} :MovementProps){
+    // abre o mapa mostrnado a origem e o destino
+    function gotToMap( {origem, destino} : MovementProps){
 
         navigation.navigate('Map', {
             userLocation: origem,
@@ -106,38 +107,31 @@ export default function ViewMovements({navigation}:any){
     function renderCard( item:MovementProps ){
         const status = item.status
 
-        let color = '#00800086'
+        let color = globalColors.positiveColor
 
-        if( status == 'created'){
-            color = 'gray'
-        } else
-    
-        if( status == 'em transito'){
-            color = 'salmon'
-        } else 
-        if( status == 'Coleta finalizada'){
-
-        }
+        if( status == 'created')     color = globalColors.pink;  else
+        if( status == 'em transito') color = globalColors.yellow
 
         return (
-            <View style={[styles.itemContainer, {backgroundColor: color}]}>
+            <View style={[styles.itemContainer, {borderColor: color}]}>
                 
-                <View style={styles.productContainer}>
-                    <Image style={styles.imageCard} source={{uri:`${item.produto.imagem}`}}/>
 
-                    <View style={styles.productInfo}>
+                <View style={styles.productContainer}>
+                    <Image style={[styles.imageCard, {borderColor: color}]} source={{uri:`${item.produto.imagem}`}}/>
+
+                    <View>
                         <Text style={styles.productName}>{item.produto.nome}</Text>
                         <Text style={styles.quantity}>{item.quantidade + ' Unidades'}</Text>
                     </View>
 
                 </View>
 
-                <View style={styles.line} />
+                <View style={styles.line}/>
 
-                <ItemTexts title='Origem:' description={item.origem.nome}></ItemTexts>
-                <ItemTexts title='Destino:' description={item.destino.nome}></ItemTexts>
-                <ItemTexts title='Status:' description={item.status}></ItemTexts>
-                <ItemTexts title='Pedido em:' description={item.historico[0].data}></ItemTexts>
+                <ItemTexts title='Origem:' description={item.origem.nome} />
+                <ItemTexts title='Destino:' description={item.destino.nome} />
+                <ItemTexts title='Status:' description={item.status} color={color} />
+                <ItemTexts title='Pedido em:' description={item.historico[0].data} />
 
                 {
                     
@@ -176,12 +170,12 @@ export default function ViewMovements({navigation}:any){
 
             </View>
 
-
             <View style={styles.flatListContainer}>
                 
                 <FlatList data={movements}
                     contentContainerStyle={{ width:"100%" }}
-                    renderItem={({item}) => renderCard( item )}>
+                    renderItem={({item}) => renderCard( item )}
+                    ListFooterComponent={<View style={{ height: 40}} />}>
                 </FlatList>
 
             </View>
@@ -206,14 +200,9 @@ const styles = StyleSheet.create({
         color: globalColors.mainColor
     },
 
-    productInfo: {
-        
-    },
-
     buttonsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between'
-
     },
 
     buttonText: {
@@ -223,13 +212,13 @@ const styles = StyleSheet.create({
     },
 
     button: {
-        backgroundColor: '#B386FC',
+        backgroundColor: globalColors.alternativeButtonColor,
         alignItems: 'center',
     },
 
     line: {
         borderBottomWidth: 1,
-        borderColor: globalColors.mainColor // '#B386FC'
+        borderColor: globalColors.mainColor
     },
 
     productContainer: {
@@ -252,12 +241,8 @@ const styles = StyleSheet.create({
         marginVertical: 20,
         marginHorizontal: 20,
         padding: 10,
-        borderRadius: 5
-    },
-
-    container: {
-        width: "100%",
-        height: "100%"
+        borderRadius: 5,
+        borderWidth: 2
     }
 
 })

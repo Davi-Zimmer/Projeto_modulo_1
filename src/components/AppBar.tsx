@@ -1,10 +1,15 @@
-import { View, Text, Button, StyleSheet, Image, TouchableOpacity } from "react-native";
-import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet";
+// React \\
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
+
+// Others \\
+import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet"
+
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 
+
 type AppBarProps = {
-    pageName: string,
-    goBack?: () => void,
+    pageName: string
+    goBack?: () => void
     noLine?: boolean
 }
 

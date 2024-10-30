@@ -5,6 +5,12 @@ import { StyleSheet } from "react-native"
 '#CBFC86'
 '#B386FC'
 
+'#000014'
+'#1c222b'
+'#202e66'
+'#3850ab'
+'#6793D5'
+
 export const globalColors = {
     backgroundPages: '#3D3152',
     anyContainerBackground: '#596175',
@@ -13,7 +19,10 @@ export const globalColors = {
     mainColorWeaker: 'rgba(134, 165, 252, .5)',
     positiveColor: '#86FC91',
     negativeColor: '#FF4135',
-    alternativeButtonColor: '#B386FC'
+    alternativeButtonColor: '#B386FC',
+    pink:'#FC86AC',
+    yellow: '#FCDB86'
+
 }
 // rgb(65, 68, 75)
 
@@ -31,7 +40,6 @@ export const globalStyle = StyleSheet.create({
     },
 
     font: {
-        //fontFamily: "Times New Roman"
         borderWidth: 1
     },
 
@@ -57,6 +65,7 @@ export const globalStyle = StyleSheet.create({
     container: {
         height: '100%',
         backgroundColor: globalColors.anyContainerBackground,
+        flex: 1
     },
 
     linearBorderRight: {
