@@ -6,7 +6,7 @@ export function FilterList( list:Array<any>, props:Array<string>, filter:string 
         
         let string = ''
         
-        props.forEach( elm => string += itemToFilter[ elm ].toLowerCase())
+        props.forEach( elm => string += itemToFilter[ elm ].toLowerCase() )
 
         return string.includes( filterWord )
 

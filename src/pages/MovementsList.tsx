@@ -18,6 +18,7 @@ import User from "../components/User"
 import { storage } from "../scripts/localStorage"
 import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet"
 import { MovementProps  } from "../Props/ProductProps";
+import { Loader } from "../hooks/Loader"
 
 
 export default function MovementsList({navigation}:any){
@@ -25,12 +26,18 @@ export default function MovementsList({navigation}:any){
     const [movements, setMovements] = useState<Array<MovementProps>>([])
     const [userName, setUserName] = useState('')
 
+    const [loading , setLoading] = useState( true )
+
+    const { textLoading } = Loader( loading )
+
+
     // pega a lista de movimentos do backend e o user no storage
     useEffect(() => {
         
         axios.get(process.env.EXPO_PUBLIC_API_URL + '/movements')
             .then( res => setMovements( res.data ))
             .catch( console.error )
+            .finally( () => setLoading(false) )
 
         storage.get('user').then( user => setUserName(user.name)).catch( console.error )
 
@@ -75,6 +82,7 @@ export default function MovementsList({navigation}:any){
                     data={movements}
                     style={styles.asd}
                     renderItem={({ item }) => render(item)}
+                    ListEmptyComponent={textLoading('Carregando', 'Não há movimentos')}
                     ListFooterComponent={<View style={{ height: 40}} />} >
                 </FlatList>
             </View>
