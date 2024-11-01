@@ -46,7 +46,7 @@ export const globalStyle = StyleSheet.create({
     },
 
     font: {
-        borderWidth: 1
+        // borderWidth: 1
     },
 
     buttonText: {

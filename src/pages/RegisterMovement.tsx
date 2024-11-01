@@ -26,29 +26,30 @@ type CustomPickerProps = {
     label?: string
     setter: (a:string) => void
     mapping: (elm: any, i: number) => JSX.Element
+    initialItem?: JSX.Element
 }
 
-function CustomPicker({selectedValue, setter, items, mapping, label}:CustomPickerProps){
+function CustomPicker({selectedValue, setter, items, mapping, label, initialItem }:CustomPickerProps){
     return (
         <View style={styles.inputsContainers}>
             <Text style={[styles.buttonText, globalStyle.font]}>{label}</Text>
             <View style={styles.picker}>
                 <Picker selectedValue={ selectedValue } onValueChange={ setter }  style={styles.picker}>
-                    {
-                        items.map( mapping )
-                    }
+                        
+                        { initialItem ? initialItem : null }
+                        { items.map( mapping ) }
+                        
                 </Picker>
             </View>
         </View>
     )
 }
 
-
 export default function RegisterMovement({navigation} : any) {
 
     const [originBranchId, setOriginBranchId]           = useState('1')
     const [destinationBranchId, setDestinationBranchId] = useState('1')
-    const [desiredProductId, setDesiredProductId]       = useState('1')
+    const [desiredProductId, setDesiredProductId]       = useState('')
 
     const [branches, setBranches] = useState<Array<BranchProps>>([])
 
@@ -78,12 +79,12 @@ export default function RegisterMovement({navigation} : any) {
     }
 
     // salva o movimento no backend
-    function register() {
+    function register( productId: number) {
         
         const movement = {
             originBranchId,
             destinationBranchId,
-            productId: desiredProductId, 
+            productId,
             quantity: productQuantity,
             description
         }
@@ -101,19 +102,25 @@ export default function RegisterMovement({navigation} : any) {
 
     function ValidateData(){
         
-        if( destinationBranchId == originBranchId){
+        if( destinationBranchId == originBranchId ){
             Alert.alert('a filial de origem e destino não podem ser as mesmas')
             return 
         }
         
-        const quantity = products[ parseInt(desiredProductId) ].quantity
-        
-        if( parseInt(productQuantity) > quantity ){
-            Alert.alert(`A quantia disponível do produto atualmente é de ${quantity} Unidades.`)
+        let productID = null
+        const product = allProducts.find((elm, i) => elm.product_name == desiredProductId && (productID = i) )
+
+        if( !product || !productID){
+            Alert.alert('Selecione um produto')
+            return
+        }
+
+        if( parseInt(productQuantity) > product.quantity ){
+            Alert.alert(`A quantia disponível do produto atualmente é de ${ product.quantity} Unidades.`)
             return 
         }
 
-        register( )
+        register( productID )
 
     }
 
@@ -148,6 +155,7 @@ export default function RegisterMovement({navigation} : any) {
                         selectedValue={originBranchId}
                         setter={changeOriginBranch}
                         items={branches}
+                        label="Filial de origem"
                         mapping={ (elm, i) => <Picker.Item style={styles.pickerItem}
                             label={elm.name}
                             value={elm.id}
@@ -158,6 +166,7 @@ export default function RegisterMovement({navigation} : any) {
                     <CustomPicker 
                         selectedValue={destinationBranchId}
                         setter={setDestinationBranchId}
+                        label="Filial de destino"
                         items={branches}
                             mapping={ (elm, i)=> <Picker.Item style={ styles.pickerItem }
                                 label={elm.name}
@@ -170,11 +179,13 @@ export default function RegisterMovement({navigation} : any) {
                     <CustomPicker
                         selectedValue={desiredProductId}
                         setter={setDesiredProductId}
+                        label="Produto"
                         items={products}
+                        initialItem={ <Picker.Item style={ styles.pickerItem } label="Escolha um item" value={null} /> }
                             mapping={ (elm, i) => <Picker.Item style={ styles.pickerItem }
                                 label={elm.product_name + `: ${elm.quantity} Un.`}
-                                value={i}
-                                key={i} 
+                                value={elm.product_name}
+                                key={i}
                                 
                             />
                         }
@@ -217,7 +228,8 @@ const styles = StyleSheet.create({
 
     buttonText: {
         color: globalColors.mainColor,
-        fontSize: 15
+        fontSize: 15,
+        marginLeft: 10
     },
 
     posContainer: {
