@@ -1,5 +1,5 @@
 // React \\
-import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, Alert } from "react-native"
+import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, Alert, TextInput } from "react-native"
 import React, { useEffect, useState } from "react"
 
 
@@ -13,18 +13,113 @@ import axios from "axios"
 
 import * as ImagePicker from 'expo-image-picker'
 
+import * as Progress from 'react-native-progress';
+
+
+import * as Location from 'expo-location';
+
+
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 
 import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet"
-import { MovementProps  } from "../Props/ProductProps"
+import { LocalizationProps, MovementProps  } from "../Props/ProductProps"
 import { storage } from "../scripts/localStorage"
+import { HaversineFormula } from "../scripts/calculeDistance"
+import { Loader } from "../hooks/Loader"
+
+async function getLocation(): Promise<LocalizationProps | null> {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+        console.log('Permission to access location was denied')
+        return null
+    }
+  
+    const location = await Location.getCurrentPositionAsync({})
+    const { latitude, longitude } = location.coords
+    
+    return { latitude, longitude } as LocalizationProps
+}
+
+function getProgressByDistance({origem, destino}:MovementProps, {latitude, longitude}:LocalizationProps){
+    const branchDistance = 
+    HaversineFormula(
+        origem.latitude,
+        origem.longitude,
+        destino.latitude,
+        destino.longitude
+    )
+
+    let driverDistance =
+    HaversineFormula(
+        latitude,
+        longitude,
+        destino.latitude,
+        destino.longitude
+    )
+
+    // driverDistance *= .9
+
+    // console.log(branchDistance / driverDistance )
+    
+    return branchDistance / driverDistance
+}
+
+type progressBarProps = {
+    item: MovementProps,
+    ended: boolean
+}
+
+function ProgressBar ({item, ended}:progressBarProps) {
+    const [progress, setProgress] = useState(0)
+
+    useEffect(() => {
+
+        if(ended){
+            
+            setProgress( 1 )
+            
+        } else {
+            getLocation().then( res => {
+                if(res){
+                    const distance = getProgressByDistance( item, res )
+    
+                    setProgress( distance )
+                }
+            })
+        }
+
+      
+    }, [])
+
+    return <Progress.Bar progress={ progress } style={styles.progressBar} />
+}
 
 export default function ViewMovements({navigation}:any){
 
     const [userName, setUserName] = useState('')
     const [movements, setMovements] = useState<Array<MovementProps>>([])
+    const [ loading, setLoading ] = useState(true)
 
-    const [dummy, setDummy] = useState(true)
+    const [shownMovements, setShownMovements] = useState<Array<MovementProps>>([])
+
+
+    const [filter, setFilter] = useState('')
+
+    const { textLoading } = Loader( loading ) 
+
+    useEffect(() => {
+
+        const newMovementList = movements.filter(elm => {
+            const st = (elm.produto.nome + elm.status).toLowerCase()
+
+            return st.includes( filter.toLowerCase() )
+        })
+
+        setShownMovements( newMovementList )
+    }, [movements, filter])
+
+
+    const [dummy, setDummy] = useState( true )
 
     const reload = () => setDummy(!dummy)
 
@@ -32,6 +127,7 @@ export default function ViewMovements({navigation}:any){
         axios.get(process.env.EXPO_PUBLIC_API_URL + '/movements')
         .then( res => setMovements(res.data) )
         .catch( console.error )
+        .finally( () => setLoading( false ))
     }
 
     useEffect( getMovements, [dummy])
@@ -115,7 +211,6 @@ export default function ViewMovements({navigation}:any){
         return (
             <View style={[styles.itemContainer, {borderColor: color}]}>
                 
-
                 <View style={styles.productContainer}>
                     <Image style={[styles.imageCard, {borderColor: color}]} source={{uri:`${item.produto.imagem}`}}/>
 
@@ -127,6 +222,10 @@ export default function ViewMovements({navigation}:any){
                 </View>
 
                 <View style={styles.line}/>
+
+                
+                <ProgressBar item={item} ended={status == 'Coleta finalizada'}/>
+                    
 
                 <ItemTexts title='Origem:' description={item.origem.nome} />
                 <ItemTexts title='Destino:' description={item.destino.nome} />
@@ -170,12 +269,25 @@ export default function ViewMovements({navigation}:any){
 
             </View>
 
+            <View>
+                <TextInput
+                    value={filter}
+                    onChangeText={setFilter}
+                    style={styles.filterStyle}
+                    placeholder="Buscar"
+                    placeholderTextColor={'#60687D'} 
+                    />
+                    
+            </View>
+
+
             <View style={styles.flatListContainer}>
                 
-                <FlatList data={movements}
+                <FlatList data={shownMovements}
                     contentContainerStyle={{ width:"100%" }}
                     renderItem={({item}) => renderCard( item )}
-                    ListFooterComponent={<View style={{ height: 40}} />}>
+                    ListFooterComponent={<View style={{ height: 40}} />}
+                    ListEmptyComponent={textLoading('Carregando', 'Não há movimentos')}>
                 </FlatList>
 
             </View>
@@ -184,6 +296,18 @@ export default function ViewMovements({navigation}:any){
 }
 
 const styles = StyleSheet.create({
+
+    filterStyle: {
+        padding: 10,
+        backgroundColor: globalColors.casing,
+        color: globalColors.mainColor
+    },
+
+    progressBar: {
+        width: '100%'
+    },
+
+
     flatListContainer: {
         backgroundColor: globalColors.casing,
         margin: 20

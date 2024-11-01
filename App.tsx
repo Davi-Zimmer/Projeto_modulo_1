@@ -1,8 +1,7 @@
 // React \\
 import {View, Text, SafeAreaView, Alert, TouchableOpacity, StyleSheet, StatusBar} from "react-native"
-import {useState, useEffect} from "react"
+import {useState, useEffect, Component} from "react"
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-
 
 // React Navigation \\
 import { NavigationContainer } from "@react-navigation/native"
@@ -25,27 +24,11 @@ import RegisterMovement from "./src/pages/RegisterMovement"
 import ViewMovements from "./src/pages/ViewMovements"
 import Map from "./src/pages/Map"
 
-
-function emptyHeader(){
-  return {header: () => <></>}
-}
-
+const emptyHeader = () => {return {header: () => <></>}}
 
 export default function App() {
 
-  const windows = [
-    "Login", Login,
-    "Home", Home,
-    "Products List", ProductList,
-    "Users", UsersList,
-    "Register User", RegisterUser,
-    "Movements List", MovementsList,
-    "Register Movement", RegisterMovement,
-    "View Movements", ViewMovements
-  ]
-
   return (
-
     <SafeAreaView style={{flex:1}}>
       <StatusBar />
       <NavigationContainer>
@@ -59,11 +42,11 @@ export default function App() {
           <Stack.Screen name="Movements List" component={ MovementsList } options={ emptyHeader() }/>
           <Stack.Screen name="Register Movement" component={ RegisterMovement } options={ emptyHeader() }/>
           <Stack.Screen name="View Movements" component={ ViewMovements } options={ emptyHeader() } />
-          <Stack.Screen name="Map" component={ Map } initialParams={{ userLocation:null, destinationLocation:null }}></Stack.Screen>
-         
+          <Stack.Screen name="Map" component={ Map } initialParams={{ userLocation:null, destinationLocation:null } } options={ emptyHeader() } />
+        
         </Stack.Navigator>
       </NavigationContainer>
-
     </SafeAreaView>
+
   )
 }

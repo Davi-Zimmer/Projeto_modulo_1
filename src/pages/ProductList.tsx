@@ -14,6 +14,7 @@ import { FilterList } from "../scripts/FilterItems"
 
 import AppBar from "../components/AppBar"
 import { ProductProps } from "../Props/ProductProps"
+import { Loader } from "../hooks/Loader"
 
 
 type ProductArray = Array<ProductProps>
@@ -26,19 +27,22 @@ export default function ProductList({navigation}: any) {
     const [filteredItems, setFilteredItems] = useState<ProductArray>([])
 
     const [filter, setFilter] = useState('')
+    const [loading , setLoading] = useState( true )
+
+    const { textLoading } = Loader( loading )
 
     // pega os produtos do backend
     useEffect(() => {
         axios.get(process.env.EXPO_PUBLIC_API_URL + '/products')
             .then( res =>  setProducts( res.data ))
             .catch( console.error )
+            .finally( () => setLoading(false) )
     }, [])
 
     // filtra os produtos de acordo com a pesquisa
     useEffect(() => {
         const filteredList = FilterList(products, ['product_name', "branch_name"], filter)
         setFilteredItems( filteredList )
-        console.log('d')
     }, [filter, products])
 
     function Product({product_name, branch_name, image_url, quantity, description}: ProductProps){
@@ -80,6 +84,7 @@ export default function ProductList({navigation}: any) {
                 renderItem={({item}) => Product(item)}
                 contentContainerStyle={{ width: "100%" }}
                 style={{ marginTop: 10 }}
+                ListEmptyComponent={textLoading('Carregando', 'Não há produtos')}
             >
 
             </FlatList>

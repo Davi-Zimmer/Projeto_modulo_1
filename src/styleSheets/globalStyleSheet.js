@@ -39,6 +39,12 @@ export const globalStyle = StyleSheet.create({
         borderColor: '#86FC91',
     },
 
+    loadingTexts: {
+        fontSize: 25,
+        color: globalColors.mainColor,
+        alignSelf: 'center',
+    },
+
     font: {
         borderWidth: 1
     },

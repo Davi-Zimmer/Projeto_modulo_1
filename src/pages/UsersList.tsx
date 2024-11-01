@@ -7,11 +7,10 @@ import axios from "axios";
 
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 
-
 import AppBar from "../components/AppBar"
 import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet"
 import { useFocusEffect } from "@react-navigation/native";
-
+import { Loader } from "../hooks/Loader";
 
 type UserDataProps = {
     name: string
@@ -72,18 +71,21 @@ function User({name, status, onChange, profile}:UserProps){
 export default function UsersList({navigation} : any) {
 
     const [users, setUsers] = useState<Array<UserDataProps>>([])
+    const [ loading, setLoading ] = useState( true )
 
+    const { textLoading } = Loader( loading )
     // pega todos os usuários da database
     function getUsers() {
-        axios.get(process.env.EXPO_PUBLIC_API_URL + '/users').then( res => setUsers( res.data ))
-        console.log('pegando usuários')
+        axios.get(process.env.EXPO_PUBLIC_API_URL + '/users')
+        .then( res => setUsers( res.data ))
+        .finally(() => setLoading( false ))
     }
 
     useFocusEffect(
         useCallback(() => {
              getUsers()
         }, []) 
-    );
+    )
 
 
     // atualiza o status do usuario de acordo com o id
@@ -119,7 +121,7 @@ export default function UsersList({navigation} : any) {
                         gap: 10,
                         padding: 5
                     }}
-
+                    ListEmptyComponent={textLoading('Carregando', 'Não há usuários')}
                     renderItem={({item}) => {
                         return <User name={item.name} status={item.status} profile={item.profile || ''} onChange={
                             () => updateUser(item.id, item.status)
