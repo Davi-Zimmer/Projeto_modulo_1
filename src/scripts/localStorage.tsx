@@ -38,5 +38,4 @@ async function set( key:string, newStorageData: any) {
     return isError
 } 
 
-
 export const storage = { get, set }

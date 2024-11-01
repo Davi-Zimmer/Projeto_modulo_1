@@ -1,80 +1,85 @@
 // React \\
-import { View, Text, Button, StyleSheet, Image, TouchableOpacity } from "react-native";
-
-
-import { storage } from "../scripts/localStorage";
+import { View, Text, TouchableOpacity } from "react-native"
+import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { useEffect, useState } from "react"
 
 
 // Custom Components \\
-import Header from "../components/Header";
-import User from "../components/User";
-import { useEffect, useState } from "react";
+import Header from "../components/Header"
+import User from "../components/User"
 
+// Others \\
+import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet"
+import { storage } from "../scripts/localStorage"
+
+
+type IconProps = {
+    name: string
+    size: number
+    color: string
+}
+
+type CustomButtonProps = {
+    onPress: () => void
+    text: string
+    icon: IconProps
+}
+
+function CustomButton({onPress, text, icon}:CustomButtonProps){
+    return (
+        <TouchableOpacity style={globalStyle.optionButton} onPress={onPress}>
+            <Text style={[globalStyle.optionText, globalStyle.font]}>{text}</Text>
+            <MaterialCommunityIcons name={icon.name as any} color={icon.color} size={icon.size}/>
+        </TouchableOpacity>
+    )
+}
 
 export default function Home({navigation}: any){
     
     const navigateTo = (pageName:string) => navigation.navigate( pageName )
 
-    function backToLogin(){
+    function logout(){
         storage.set('user', null)
         navigateTo('Login')
     }
 
     const [userName, setUserName] = useState('')
     
+    // pega o usuario no storage
     useEffect(() => {
-        storage.get('user').then( user => {
-            setUserName( user.name )
-        }).catch( console.warn )
+        storage.get('user')
+        .then( user => setUserName( user.name ))
+        .catch( console.warn )
     }, [])
 
-
     return (
-    <View>
-        <Header>
-            <User name={"Olá, " + userName} image="https://placehold.co/200.png" />
-        </Header>
+        <View style={[globalStyle.container]}>
+            <Header style={globalStyle.header}>
+                <User name={"Olá, " + userName} image="https://placehold.co/200.png" />
 
-        <Button title='Logout' onPress={backToLogin}></Button>
+                <TouchableOpacity onPress={logout}>
+                    {
+                        <MaterialCommunityIcons name="logout" color={globalColors.mainColor} size={25}/>
+                    }
+                </TouchableOpacity>
+            </Header>
 
-        <View style={styles.cardContainer}>
+            <View style={globalStyle.optionsContainer}>
 
-            <TouchableOpacity style={styles.button} onPress={() => navigateTo("Products List")}>
-                <Text>Estoque</Text>
-            </TouchableOpacity>
+                <CustomButton text="Estoque" onPress={() => navigateTo("Products List")} icon={{
+                    name:'store-check-outline',
+                    color: globalColors.mainColor,
+                    size: 40
+                }}/>
 
-            <TouchableOpacity style={styles.button} onPress={() => navigateTo("Users")}>
-                <Text>Usuários</Text>
-            </TouchableOpacity>
+                <CustomButton text="Usuários" onPress={() => navigateTo("Users")} icon={{
+                    name:'account-group-outline',
+                    color: globalColors.mainColor,
+                    size: 40
+                }}/>
 
+            </View>
+            
         </View>
-
-        
-    </View>
     )
 }
-
-
-const styles = StyleSheet.create({
-    button: {
-        padding: 10,
-        borderWidth: 1,
-        borderColor: 'red',
-        width: "80%",
-        margin: 10
-    },
-
-    cardContainer: {
-        padding: 10,
-        alignItems: 'center',
-        marginTop: 20
-    },
-
-    userContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between'
-    }
-})
-
-// https://coolors.co/image-picker

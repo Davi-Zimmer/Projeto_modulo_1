@@ -1,48 +1,51 @@
 // React \\
-import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity, Touchable, Alert, Button } from "react-native";
-import React, { useEffect, useState } from "react";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ScrollView } from "react-native"
+import React, { useState } from "react"
 
 
+// Others \\
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 
-import { globalStyle } from "../styleSheets/globalStyleSheet";
-import axios from "axios";
+import axios from "axios"
+
+import { globalColors, globalStyle } from "../styleSheets/globalStyleSheet"
+import AppBar from "../components/AppBar";
 
 
 type InfoInputProps = {
     content: string
     value: string
     onChange?: React.Dispatch<React.SetStateAction<string>>
+    secureTextEntry?: boolean
 }
 
-function InfoInput({content, value, onChange} : InfoInputProps) {
+function InfoInput({content, value, onChange, secureTextEntry = false} : InfoInputProps) {
     
-    function handleChanges( newValue:string ) {
-        onChange?.( newValue )
-    }
+    const handleChanges = ( newValue:string ) => onChange?.( newValue )
     
     return (
-        <View style={styles.inputContainer}>
-            <Text>{content}</Text>
-            <TextInput value={value} onChangeText={handleChanges} style={globalStyle.textInput}/>
+        <View style={{ margin: 10 }}>
+            <Text style={[globalStyle.font, styles.textInput]}>{content}</Text>
+            <TextInput value={value} onChangeText={handleChanges} style={[globalStyle.textInput, {padding: 10}]} secureTextEntry={secureTextEntry} />
         </View>
     )
 }
 
 type ButtonSelectionProps = {
-    label: string
-    onPress?: () => void
-
+    icon: string
+    onPress?: () => void,
+    selected?: boolean
 }
 
-function ButtonSelection({label, onPress}:ButtonSelectionProps) {
+function ButtonSelection({ icon, onPress, selected }:ButtonSelectionProps) {
     
-    function handlePress(){
-        onPress?.()
-    }
+    const handlePress =() => onPress?.()
+
+    const color = selected ? globalColors.positiveColor : globalColors.mainColor 
 
     return (
-        <TouchableOpacity onPress={ handlePress } style={styles.ButtonSelection}>
-            <Text>{label}</Text>
+        <TouchableOpacity onPress={ handlePress } style={[styles.ButtonSelection, {borderColor: color}]}>
+            <MaterialCommunityIcons name={icon as any} size={40} color={ color }/>
         </TouchableOpacity>
     )
 }
@@ -57,24 +60,26 @@ function DoubleSelection({children, firstSelected, onChange}: DoubleSelectionPro
     
     if( children.length != 2 ) throw new Error('Only 2 child nodes are allowed.')
     
-    function toggleSelection( index: number ){
-        onChange( index === 0 )
-    }
+    const toggleSelection = ( index: number ) => onChange( index === 0 )
 
     return (
         <View style={styles.DoubleSelectionStyle}>
-            {React.Children.map(children, (child, index) => {
-                return (React.cloneElement( child, { 
-                    onPress: () => toggleSelection(index)
-                }))
-            })}
+            {React.Children.map(children, 
+                (child, index) => {
+
+                    return (React.cloneElement( child, { 
+                        onPress: () => toggleSelection(index),
+                        selected: (firstSelected ? 0 : 1) == index
+                    }))
+
+                })
+                
+            }
         </View>
     )
 }
 
-
-
-export default function RegisterUser(){
+export default function RegisterUser({navigation}: any){
     
     const [ isDriver, setIsDriver ] = useState(true)
     const [ name, setName ] = useState('')
@@ -129,39 +134,56 @@ export default function RegisterUser(){
     }
 
     return (
-        <View>
+
+        <>
+            <AppBar pageName="Register Movement" goBack={navigation.goBack }/>
+            <View style={[globalStyle.container, {padding: 10}]}>
             
-            <DoubleSelection firstSelected={isDriver} onChange={setIsDriver}>
-                <ButtonSelection label="Motorista" />
-                <ButtonSelection label="Filial" />
-            </DoubleSelection>
+                <ScrollView style={styles.inputsContainer}>
+                    <DoubleSelection firstSelected={isDriver} onChange={setIsDriver}>
+                        <ButtonSelection icon="car-hatchback" />
+                        <ButtonSelection icon="office-building-marker-outline" />
+                    </DoubleSelection>
 
-            <InfoInput content="Nome completo" value={name} onChange={setName}/>
-            <InfoInput content={isDriver == true ? 'CPF' : 'CNPJ'} value={document}  onChange={setDocument}/>
+                    <InfoInput content="Nome completo" value={name} onChange={setName}/>
+                    <InfoInput content={isDriver == true ? 'CPF' : 'CNPJ'} value={document}  onChange={setDocument}/>
 
-            <InfoInput content="Endereço" value={address} onChange={setAddress}/>
-            <InfoInput content="Email" value={email} onChange={setEmail}/>
-            <InfoInput content="Senha" value={password} onChange={setPassword}/>
-            <InfoInput content="Confirme a senha" value={confirmPassword} onChange={setConfirmPassword}/>
-            
-            <TouchableOpacity style={globalStyle.button} onPress={handleRegister}>
-                <Text style={globalStyle.buttonText}>Cadastrar</Text>
-            </TouchableOpacity>
+                    <InfoInput content="Endereço" value={address} onChange={setAddress}/>
+                    <InfoInput content="Email" value={email} onChange={setEmail}/>
+                    <InfoInput content="Senha" value={password} onChange={setPassword} secureTextEntry />
+                    <InfoInput content="Confirme a senha" value={confirmPassword} onChange={setConfirmPassword} secureTextEntry/>
+                    
+                    <TouchableOpacity style={globalStyle.button} onPress={handleRegister}>
+                        <Text style={globalStyle.buttonText}>Cadastrar</Text>
+                    </TouchableOpacity>
 
-        </View>
+                </ScrollView>
+
+            </View>
+        </>
     )
 }
 
 
 const styles = StyleSheet.create({
-    ButtonSelection: {
-        borderWidth: 1,
-        borderColor: 'blue',
-        padding: 20
+
+    inputsContainer: {
+        padding: 10,
+        gap: 10,
+        backgroundColor: globalColors.casing,
+
     },
 
-    inputContainer: {
-        margin: 10
+    textInput: {
+        color: globalColors.mainColor,
+        fontSize: 15
+    },
+
+
+    ButtonSelection: {
+        borderWidth: 1,
+        padding: 20,
+        borderColor: globalColors.mainColor
     },
      
     DoubleSelectionStyle: {
@@ -170,6 +192,3 @@ const styles = StyleSheet.create({
     }
 
 })
-
-
-// useFocusEffect

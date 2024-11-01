@@ -1,9 +1,14 @@
 // React \\
-import {View, Text, SafeAreaView, Alert, TouchableOpacity, StyleSheet, StatusBar, Button} from "react-native"
+import {View, Text, TouchableOpacity, StyleSheet } from "react-native"
 import {useState, useEffect} from "react"
+
 import MapView, { Marker } from "react-native-maps"
 import { useRoute } from "@react-navigation/native"
+
+
+// Others \\
 import { LocalizationProps } from "../Props/ProductProps"
+import { globalColors } from "../styleSheets/globalStyleSheet"
 
 type CoordinatesProps = {
     userLocation: LocalizationProps
@@ -17,7 +22,6 @@ export default function Map() {
     const {userLocation, destinationLocation} : CoordinatesProps = route.params as CoordinatesProps
 
     const [focusInUser, setFocusInUser] = useState( true )
-
 
     const [region, setRegion] = useState({
         latitude: 0,
@@ -34,35 +38,33 @@ export default function Map() {
         });
     };
 
+
+    // altera as coordenadas pra mostrar o motorista ou o destino
     useEffect( () => {
 
-
+        let [lati, long] = [userLocation.latitude, userLocation.longitude]
 
         if( focusInUser ){
-            updateRegion( destinationLocation.latitude, destinationLocation.longitude)
-   
+            [ lati, long ] = [destinationLocation.latitude, destinationLocation.longitude]
+        } 
 
-        } else {
+        updateRegion( lati, long )
 
-            updateRegion( userLocation.latitude, userLocation.longitude)
-
-
-        }
     }, [focusInUser])
 
 
-
-    function goToDesteny(){
-        setFocusInUser( !focusInUser )
-    }
+    const goToDesteny = () => setFocusInUser( !focusInUser )
 
     return (
         
         <View style={styles.container}>
 
+            <TouchableOpacity onPress={goToDesteny}>
+                <Text style={styles.text}>{focusInUser ? 'Ir para destino' : 'Ir para origem'}</Text>
+            </TouchableOpacity>
 
-            <Button title={focusInUser ? 'Ir para destino' : 'Ir para origem'} onPress={goToDesteny}/>
-            <Text>{'Distância: '}</Text>
+            {/* <Text>{'Distância: '}</Text> */}
+
             <MapView style={styles.map}
                 provider='google'
                 
@@ -73,8 +75,8 @@ export default function Map() {
                 <Marker
                     title='Destino' 
                     coordinate={{
-                    latitude: destinationLocation.latitude,
-                    longitude: destinationLocation.longitude
+                        latitude: destinationLocation.latitude,
+                        longitude: destinationLocation.longitude
                     }}>
 
                 </Marker>
@@ -82,9 +84,9 @@ export default function Map() {
                 <Marker
                     title='Destino' 
                     coordinate={{
-                    latitude: userLocation.latitude,
-                    longitude: userLocation.longitude
-                }}>
+                        latitude: userLocation.latitude,
+                        longitude: userLocation.longitude
+                    }}>
 
                 </Marker>
                 
@@ -95,11 +97,15 @@ export default function Map() {
 
 const styles = StyleSheet.create({
     container: {
-
+        backgroundColor: globalColors.anyContainerBackground
     },
 
     map: {
         width: '100%',
-        height: '100%'
+        height: '100%',
+    },
+
+    text: {
+        color: globalColors.mainColor
     }
 })

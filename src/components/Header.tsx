@@ -1,10 +1,14 @@
-import {View, Text, StyleSheet, ViewStyle } from "react-native"
+// React \\
+import {View, StyleSheet, ViewStyle } from "react-native"
 
-interface HeaderStyle extends ViewStyle {}
+
+// Style \\
+import { globalColors } from "../styleSheets/globalStyleSheet"
+
 
 type HeaderProps = {
     children?: React.ReactNode,
-    style?: HeaderStyle
+    style?: ViewStyle
 }
 
 export default function Header({children, style} : HeaderProps){
@@ -19,7 +23,6 @@ export default function Header({children, style} : HeaderProps){
 const styles = StyleSheet.create({
     header: {
         padding: 10,
-        backgroundColor: 'pink',
-    },
-
+        backgroundColor: globalColors.casing,
+    }
 })
